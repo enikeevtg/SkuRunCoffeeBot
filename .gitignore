@@ -1,2 +1,6 @@
 botconfig.py
 venv
+__pycache__
+*.log
+token.py
+*.sql
