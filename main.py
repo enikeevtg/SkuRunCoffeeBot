@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 import config
 import db
-from token import token
+from bot_token import token
 
 
 bot = telebot.TeleBot(token)
@@ -12,13 +12,13 @@ bot = telebot.TeleBot(token)
 def start(message):
     db.create_person_table()
 
-    user = get_cup_name_from_db(message.from_user.id)
+    user = db.get_cup_name_from_person_table(message.from_user.id)
     if user:
         bot.send_message(message.chat.id,
-                         f"О, а я тебя знаю! Ты - {user} 😄")
-        coffee_choosing(message, 'Давай тогда выберем напиток')
+                         f'О, а я тебя знаю! Ты - {user} 😄')
+        show_drink_types_keyboard(message, 'Давай тогда выберем напиток')
     else:
-        bot.send_message(message.chat.id, config.starting_msg)
+        # bot.send_message(message.chat.id, config.starting_msg)
         bot.send_message(message.chat.id, config.cup_name_query_msg)
         bot.register_next_step_handler(message, get_cup_name_from_user)
 
@@ -39,90 +39,110 @@ def registration(message):
     cup_name = message.text.strip()
     user = db.Person(user_id, username, first_name, last_name, cup_name)
     db.insert_user_to_person_table(user)
-    coffee_choosing(message, config.name_true_msg)
+    show_drink_types_keyboard(message, config.name_true_msg)
 
 
-@bot.message_handler(commands=['coffee'])
-def coffee_menu(message):
-    coffee_choosing(message, 'Выбери напиток из списка 👇')
+@bot.message_handler(commands=['edit'])
+def edit(message):
+    bot.send_message(message.chat.id, config.edit_name_msg)
+    
 
 
-def coffee_choosing(message, reply_message):
-    ordered_drink = config.order.get(message.from_user.id, None)
-    if ordered_drink != None:
+@bot.message_handler(commands=['menu'])
+def menu(message):
+    show_drink_types_keyboard(message, config.choose_drink)
+
+
+def show_drink_types_keyboard(message, reply_message):
+    ordered_drink = config.orders.get(message.from_user.id, None)
+    if ordered_drink is None:
+        drinks_keyboard_generator(message, reply_message)
+    else:
         bot.send_message(message.chat.id,
                          str(ordered_drink['name']) +
                          ', твой заказ (' +
                          str(ordered_drink['drink'].lower()) +
                          ') уже отправил баристе. ' +
                          'Отдыхай и наслаждайся беганутой атмосферой 🤗')
-    else:
-        markup = types.ReplyKeyboardMarkup()
-        for coffee in config.types_of_coffee:
-            markup.add(types.KeyboardButton(coffee))
-        bot.register_next_step_handler(message, option_choosing)
-        bot.send_message(message.chat.id, reply_message,
-                        reply_markup=markup)
 
 
-def option_choosing(message):
+def drinks_keyboard_generator(message, reply_message):
+    markup = types.ReplyKeyboardMarkup()
+    for coffee in config.types_of_coffee:
+        markup.add(types.KeyboardButton(coffee))
+    bot.register_next_step_handler(message, show_options_keyboard)
+    bot.send_message(message.chat.id, reply_message,
+                      reply_markup=markup)
+    
+
+def show_options_keyboard(message):
     if message.text not in config.types_of_coffee:
-        bot.send_message(message.chat.id, 'У нас такого нет. Жми /coffee')
+        drinks_keyboard_generator(message, config.try_again)
         return
 
     if message.text == 'Фильтр-кофе':
-        create_order(message)
+        create_order(message, None)
         return
 
     options = config.amerincano_options
     if message.text == 'Шиповник':
         options = config.rosehip_options
 
+    options_keyboard_generator(message, options, config.choose_option)
+
+
+def options_keyboard_generator(message, options, reply_message):
     markup = types.ReplyKeyboardMarkup()
     for option in options:
         markup.add(types.KeyboardButton(option))
-    bot.register_next_step_handler(message, create_order)
-    bot.send_message(message.chat.id,
-                     f'''Что-нибудь добавим в {message.text.lower()}?''',
-                     reply_markup=markup)
+    bot.register_next_step_handler(message, create_order, options)
+    bot.send_message(message.chat.id, reply_message, reply_markup=markup)
+    
 
-
-def create_order(message):
+def create_order(message, options):
     if message.text not in (config.amerincano_options +
                             config.rosehip_options +
                             config.types_of_coffee):
-        bot.send_message(message.chat.id, 'У нас такого нет. Жми /coffee')
+        options_keyboard_generator(message, options, config.try_again)
         return
 
-    cup_name = get_cup_name_from_db(message.from_user.id)
-    config.order[message.chat.id] = {'name': cup_name,
-                                     'drink': message.text}
-    print(config.order)
+    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
+    config.orders[message.chat.id] = {'name': cup_name,
+                                      'drink': message.text}
+
+    user_data = db.select_user_from_person_table(message.from_user.id)[0]
+    with open("orders.txt", "a") as fp:
+        fp.write(str(db.Person(*user_data[1:6])) +
+                 '   Напиток: ' +
+                 message.text +
+                 '\n\n')
+
+
     bot.send_message(message.chat.id,
                      config.order_msg + str(message.text.lower()))
 
 
-def get_cup_name_from_db(user_id):
-    user = db.select_user_from_table(user_id)
-    return user[0][5] if len(user) > 0 else None 
+def order_again(message):
+    ordered_drink = config.orders.get(message.from_user.id, None)
+    if ordered_drink != None:
+        bot.send_message(message.chat.id,
+                         str(ordered_drink['name']) +
+                         ', твой заказ (' +
+                         str(ordered_drink['drink'].lower()) +
+                         ') уже отправил баристе. ' +
+                         'Отдыхай и наслаждайся атмосферой 🤗')
+    else:
+        bot.send_message(message.chat.id, 'Жми /menu')
+
+
+@bot.message_handler()
+def other_msg(message):
+    if message.text.strip() in (config.types_of_coffee +
+                                config.amerincano_options +
+                                config.rosehip_options):
+        order_again(message)
+    else:
+        bot.send_message(message.chat.id, 'Моя твоя не понимать, нащальнике')
 
 
 bot.polling(non_stop=True)
-
-
-@bot.callback_query_handler(func=lambda call: call.data == 'print_users')
-def callback(call):
-    with open("callback.log", 'w') as fp:
-        fp.write(str(call))
-    # bot.send_message(call.message.chat.id, 'Привет')
-    connection, cursor = db.db_connection()
-    cursor.execute('SELECT * FROM person')
-    person_table = cursor.fetchall()
-
-    persons = 'Пользователи:\n'
-    for el in person_table:
-        persons += f'id: {el[0]}, uid: {el[1]}, uname: {el[2]}, fname: {el[3]}, lname: {el[4]}, cname: {el[5]}\n'
-    
-    db.db_closing(connection, cursor)
-
-    bot.send_message(call.message.chat.id, persons)

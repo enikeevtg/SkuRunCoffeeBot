@@ -8,7 +8,7 @@ REQUIREMENTS = requirements.txt
 DB = ./skurun.sql
 
 start_bot:
-	rm $(DB)
+#	rm -rf $(DB)
 	$(PY) main.py
 
 venv:

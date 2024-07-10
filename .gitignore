@@ -1,6 +1,10 @@
-botconfig.py
-venv
 __pycache__
+venv
+bot_token.py
+
+*.txt
 *.log
-token.py
+*.json
 *.sql
+
+research.py

@@ -11,7 +11,7 @@ class Person:
         username,
         first_name,
         last_name,
-        cup_name,
+        cup_name
     ) -> None:
         self.user_id = user_id
         self.username = username
@@ -74,7 +74,7 @@ def insert_user_to_person_table(user: Person):
     db_closing(connection, cursor)
 
 
-def select_user_from_table(user_id: int):
+def select_user_from_person_table(user_id: int):
     try:
         fp = open(config.db_file, 'r')
         fp.close()
@@ -86,3 +86,8 @@ def select_user_from_table(user_id: int):
     user = cursor.fetchall()
     db_closing(connection, cursor)
     return user
+
+
+def get_cup_name_from_person_table(user_id: int):
+    user = select_user_from_person_table(user_id)
+    return user[0][5] if len(user) > 0 else None
