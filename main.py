@@ -3,6 +3,7 @@ from telebot import types
 import config
 import db
 from bot_token import token
+import time
 
 
 bot = telebot.TeleBot(token)
@@ -20,15 +21,19 @@ def start(message):
     else:
         # bot.send_message(message.chat.id, config.starting_msg)
         bot.send_message(message.chat.id, config.cup_name_query_msg)
-        bot.register_next_step_handler(message, get_cup_name_from_user)
+        bot.register_next_step_handler(message,
+                                       get_cup_name_from_user, 
+                                       registration)
 
 
-def get_cup_name_from_user(message):
+def get_cup_name_from_user(message, next_step_function):
     if (message.text.rstrip().isalpha() is False):
-        bot.register_next_step_handler(message, get_cup_name_from_user)
+        bot.register_next_step_handler(message,
+                                       get_cup_name_from_user,
+                                       next_step_function)
         bot.send_message(message.chat.id, config.name_false_msg)
     else:
-        registration(message)
+        next_step_function(message)
 
 
 def registration(message):
@@ -42,11 +47,41 @@ def registration(message):
     show_drink_types_keyboard(message, config.name_true_msg)
 
 
+@bot.message_handler(commands=['name'])
+def show_current_cup_name(message):
+    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
+    bot.send_message(message.chat.id,
+                     'На твоём следующем стаканчике мы напишем ' +
+                                       str(cup_name) + ' ❤️')
+
+
 @bot.message_handler(commands=['edit'])
 def edit(message):
-    bot.send_message(message.chat.id, config.edit_name_msg)
-    
+    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
+    bot.send_message(message.chat.id, str(cup_name) + config.edit_name_msg)
+    bot.register_next_step_handler(message,
+                                   get_cup_name_from_user,
+                                   edit_cup_name)
 
+
+def edit_cup_name(message):
+    user_id = message.from_user.id
+    cup_name = message.text.strip()
+    db.update_cup_name_in_person_table(user_id, cup_name)
+
+    user_data = db.select_user_from_person_table(user_id)[0]
+    print(str(db.Person(*user_data[1:6])))
+
+    if user_id not in config.orders:
+        show_drink_types_keyboard(message,
+                                  'Ну всё, на твоём следующем стаканчике ' +
+                                  'мы напишем ' + str(cup_name) + ' 😁\n' + 
+                                  'Теперь выбирай свой напиток из списка')
+    else:
+        bot.send_message(message.chat.id,
+                         'Ну всё, на твоём следующем стаканчике ' +
+                         'мы напишем ' + str(cup_name) + ' 😁')
+        
 
 @bot.message_handler(commands=['menu'])
 def menu(message):
@@ -67,12 +102,12 @@ def show_drink_types_keyboard(message, reply_message):
 
 
 def drinks_keyboard_generator(message, reply_message):
-    markup = types.ReplyKeyboardMarkup()
+    types_markup = types.ReplyKeyboardMarkup()
     for coffee in config.types_of_coffee:
-        markup.add(types.KeyboardButton(coffee))
+        types_markup.add(types.KeyboardButton(coffee))
     bot.register_next_step_handler(message, show_options_keyboard)
     bot.send_message(message.chat.id, reply_message,
-                      reply_markup=markup)
+                     reply_markup=types_markup)
     
 
 def show_options_keyboard(message):
@@ -92,11 +127,12 @@ def show_options_keyboard(message):
 
 
 def options_keyboard_generator(message, options, reply_message):
-    markup = types.ReplyKeyboardMarkup()
+    options_markup = types.ReplyKeyboardMarkup()
     for option in options:
-        markup.add(types.KeyboardButton(option))
+        options_markup.add(types.KeyboardButton(option))
     bot.register_next_step_handler(message, create_order, options)
-    bot.send_message(message.chat.id, reply_message, reply_markup=markup)
+    bot.send_message(message.chat.id, reply_message,
+                     reply_markup=options_markup)
     
 
 def create_order(message, options):
@@ -106,6 +142,7 @@ def create_order(message, options):
         options_keyboard_generator(message, options, config.try_again)
         return
 
+    empty_markup = types.ReplyKeyboardRemove()
     cup_name = db.get_cup_name_from_person_table(message.from_user.id)
     config.orders[message.chat.id] = {'name': cup_name,
                                       'drink': message.text}
@@ -119,7 +156,8 @@ def create_order(message, options):
 
 
     bot.send_message(message.chat.id,
-                     config.order_msg + str(message.text.lower()))
+                     config.order_msg + str(message.text.lower()),
+                     reply_markup=empty_markup)
 
 
 def order_again(message):
@@ -137,12 +175,17 @@ def order_again(message):
 
 @bot.message_handler()
 def other_msg(message):
-    if message.text.strip() in (config.types_of_coffee +
-                                config.amerincano_options +
-                                config.rosehip_options):
+    all_drinks_list = [drink.lower() for drink in (config.types_of_coffee +
+                                                   config.amerincano_options +
+                                                   config.rosehip_options)]
+    if message.text.strip().lower() in all_drinks_list:
         order_again(message)
     else:
         bot.send_message(message.chat.id, 'Моя твоя не понимать, нащальнике')
+    
+    # print([time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime(message.date)),
+    #        message.from_user.username,
+    #        message.text])
 
 
 bot.polling(non_stop=True)

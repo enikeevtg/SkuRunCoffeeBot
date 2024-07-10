@@ -64,7 +64,7 @@ def insert_user_to_person_table(user: Person):
 
     connection, cursor = db_connection()
     cursor.execute(queries.query_insert_user_to_person_table,
-                  (user.user_id,
+                   (user.user_id,
                     user.username,
                     user.first_name,
                     user.last_name,
@@ -82,7 +82,7 @@ def select_user_from_person_table(user_id: int):
         person_table_creation()
 
     connection, cursor = db_connection()
-    cursor.execute(queries.query_check_user_in_table, (user_id,))
+    cursor.execute(queries.query_check_user_in_person_table, (user_id,))
     user = cursor.fetchall()
     db_closing(connection, cursor)
     return user
@@ -91,3 +91,19 @@ def select_user_from_person_table(user_id: int):
 def get_cup_name_from_person_table(user_id: int):
     user = select_user_from_person_table(user_id)
     return user[0][5] if len(user) > 0 else None
+
+
+def update_cup_name_in_person_table(user_id: int, cup_name: str):
+    try:
+        fp = open(config.db_file, 'r')
+        fp.close()
+    except:
+        person_table_creation()
+
+    connection, cursor = db_connection()
+    cursor.execute(queries.query_update_user_in_person_table,
+                   (cup_name,
+                    user_id)
+                  )
+    connection.commit()
+    db_closing(connection, cursor)

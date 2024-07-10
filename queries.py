@@ -12,5 +12,10 @@ query_insert_user_to_person_table = \
   'INSERT INTO person (user_id, username, first_name, last_name, cup_name) \
    VALUES (?, ?, ?, ?, ?)'
 
-query_check_user_in_table = \
+query_check_user_in_person_table = \
   'SELECT * FROM person WHERE user_id = ?'
+
+query_update_user_in_person_table = \
+  'UPDATE person \
+   SET cup_name = ? \
+   WHERE user_id = ?'
