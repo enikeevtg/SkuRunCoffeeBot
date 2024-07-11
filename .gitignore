@@ -1,10 +1,11 @@
 __pycache__
 venv
-bot_token.py
 
 *.txt
 *.log
 *.json
 *.sql
 
+bot.py
+bot_token.py
 research.py

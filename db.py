@@ -1,5 +1,5 @@
 import sqlite3
-import queries
+import bot_queries
 import config
 
 
@@ -50,7 +50,7 @@ def create_person_table():
 
 def person_table_creation():
     connection, cursor = db_connection()
-    cursor.execute(queries.query_create_person_table)
+    cursor.execute(bot_queries.query_create_person_table)
     connection.commit()
     db_closing(connection, cursor)    
 
@@ -63,7 +63,7 @@ def insert_user_to_person_table(user: Person):
         person_table_creation()
 
     connection, cursor = db_connection()
-    cursor.execute(queries.query_insert_user_to_person_table,
+    cursor.execute(bot_queries.query_insert_user_to_person_table,
                    (user.user_id,
                     user.username,
                     user.first_name,
@@ -74,7 +74,7 @@ def insert_user_to_person_table(user: Person):
     db_closing(connection, cursor)
 
 
-def select_user_from_person_table(user_id: int):
+def select_user_from_person_table(user_id: int) -> tuple:
     try:
         fp = open(config.db_file, 'r')
         fp.close()
@@ -82,15 +82,15 @@ def select_user_from_person_table(user_id: int):
         person_table_creation()
 
     connection, cursor = db_connection()
-    cursor.execute(queries.query_check_user_in_person_table, (user_id,))
+    cursor.execute(bot_queries.query_check_user_in_person_table, (user_id,))
     user = cursor.fetchall()
     db_closing(connection, cursor)
-    return user
+    return user[0]
 
 
 def get_cup_name_from_person_table(user_id: int):
     user = select_user_from_person_table(user_id)
-    return user[0][5] if len(user) > 0 else None
+    return user[5] if len(user) > 0 else None
 
 
 def update_cup_name_in_person_table(user_id: int, cup_name: str):
@@ -101,7 +101,7 @@ def update_cup_name_in_person_table(user_id: int, cup_name: str):
         person_table_creation()
 
     connection, cursor = db_connection()
-    cursor.execute(queries.query_update_user_in_person_table,
+    cursor.execute(bot_queries.query_update_user_in_person_table,
                    (cup_name,
                     user_id)
                   )

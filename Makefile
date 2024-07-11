@@ -3,13 +3,14 @@
 PY = python3
 PIP = pip3
 
+MAIN_SCRIPT = bot_main.py
 REQUIREMENTS = requirements.txt
 
 DB = ./skurun.sql
 
-start_bot:
+launch_bot:
 #	rm -rf $(DB)
-	$(PY) main.py
+	$(PY) $(MAIN_SCRIPT)
 
 venv:
 	$(PY) -m venv venv
