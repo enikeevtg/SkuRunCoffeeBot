@@ -25,7 +25,9 @@ starting_msg = 'Рост\n' + \
                'время на 5000\n' + \
                'степень кофемании и любимый сорт напитка 😁\n' + \
                '©️ FranticDog'
-starting_animation = 'sources/starting_animation.mp4'
+# starting_animation = 'sources/starting_animation.mp4'
+starting_animation = \
+  r'https://cs9.pikabu.ru/post_img/2017/10/27/7/1509102404164624978.gif'
 cup_name_query_msg = 'Как подписать твой стаканчик? ✍️'
 order_msg = 'Записал, отправил, обнял, приподнял, поставил, жди пирогов и '
 

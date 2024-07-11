@@ -9,13 +9,15 @@ import db
 def start(message):
     db.create_person_table()
 
+
     user = db.get_cup_name_from_person_table(message.from_user.id)
     if user:
         bot.send_message(message.chat.id,
                          f'О, а я тебя знаю! Ты - {user} 😄')
         bot.send_message(message.chat.id, config.commans_msg)
     else:
-        # bot.send_message(message.chat.id, config.starting_msg)
+        bot.send_animation(message.chat.id, config.starting_animation)
+        bot.send_message(message.chat.id, config.starting_msg)
         bot.send_message(message.chat.id, config.cup_name_query_msg)
         bot.register_next_step_handler(message,
                                        common.get_cup_name_from_user, 
