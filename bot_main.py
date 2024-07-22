@@ -1,11 +1,12 @@
-from telebot import types
+# Центральный файл бота. Обработка бесполезных сообщений
+
+
 from bot import bot
 import config
-import db
 from bot_token import token
 import time
 
-
+# from bot_gsheets import *
 from bot_start import *
 from bot_menu import *
 from bot_name import *

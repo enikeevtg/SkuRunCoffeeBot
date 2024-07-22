@@ -1,3 +1,6 @@
+# Редактирование имени бегуна
+
+
 from bot import bot
 import db
 import config
@@ -18,14 +21,14 @@ def edit_cup_name(message):
     cup_name = message.text.strip()
     db.update_cup_name_in_person_table(user_id, cup_name)
 
-    user_data = db.select_user_from_person_table(user_id)
-    print(str(db.Person(*user_data[1:6])))
+    # user_data = db.select_user_from_person_table(user_id)
+    # print(str(db.Person(*user_data[1:6])))
 
-    reply_msg = 'Ну всё, на твоём следующем стаканчике ' + \
+    reply_msg = 'Ну всё, в следующий раз на твоём стаканчике ' + \
                 'мы напишем ' + str(cup_name) + ' 😁'
     if user_id not in config.orders:
-        reply_msg = 'Ну всё, на твоём следующем стаканчике ' + \
-                    'мы напишем ' + str(cup_name) + ' 😁\n' +  \
-                    'Теперь выбирай свой напиток из /menu'
+        reply_msg = 'Ну всё, поменял твоё имя на ' + \
+                    str(cup_name) + ' 😁\n' + \
+                    'Теперь жми /menu и выбирай свой напиток'
 
     bot.send_message(message.chat.id, reply_msg)

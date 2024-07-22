@@ -1,3 +1,6 @@
+# Функции работы с БД SQLite3
+
+
 import sqlite3
 import bot_queries
 import config
@@ -85,12 +88,12 @@ def select_user_from_person_table(user_id: int) -> tuple:
     cursor.execute(bot_queries.query_check_user_in_person_table, (user_id,))
     user = cursor.fetchall()
     db_closing(connection, cursor)
-    return user[0]
+    return user[0] if len(user) > 0 else None
 
 
 def get_cup_name_from_person_table(user_id: int):
     user = select_user_from_person_table(user_id)
-    return user[5] if len(user) > 0 else None
+    return user[5] if user != None else None
 
 
 def update_cup_name_in_person_table(user_id: int, cup_name: str):

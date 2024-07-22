@@ -15,6 +15,9 @@ launch_bot:
 venv:
 	$(PY) -m venv venv
 
+freeze_deps: $(REQUIREMENTS)
+	$(PIP) freeze > $^
+
 install_deps: $(REQUIREMENTS)
 	$(PIP) install -r $^
 

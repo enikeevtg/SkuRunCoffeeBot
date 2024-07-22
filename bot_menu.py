@@ -1,23 +1,23 @@
+# Обработка заказа напитка
+
+
 from bot import bot
 import config
 import db
+import bot_gsheets as gsheets
 from telebot import types
 
 
 @bot.message_handler(commands=['menu'])
 def menu(message):
-    show_drink_types_keyboard(message, config.choose_drink_msg)
-
-
-def show_drink_types_keyboard(message, reply_message):
     ordered_drink = config.orders.get(message.from_user.id, None)
     if ordered_drink is None:
-        drinks_keyboard_generator(message, reply_message)
+        drinks_keyboard_generator(message, config.choose_drink_msg)
     else:
         bot.send_message(message.chat.id,
                          str(ordered_drink['name']) +
                          ', твой заказ (' +
-                         str(ordered_drink['drink'].lower()) +
+                         str(ordered_drink['order'].lower()) +
                          ') уже отправил баристе. ' +
                          'Отдыхай и наслаждайся беганутой атмосферой 🤗')
 
@@ -63,18 +63,26 @@ def create_order(message, options):
         options_keyboard_generator(message, options, config.try_again_msg)
         return
 
-    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
-    config.orders[message.chat.id] = {'name': cup_name,
-                                      'drink': message.text}
-
-    user_data = db.select_user_from_person_table(message.from_user.id)
-    with open("orders.txt", "a") as fp:
-        fp.write(str(db.Person(*user_data[1:6])) +
-                 '   Напиток: ' +
-                 message.text +
-                 '\n\n')
-
+    # Удаление клавиатуры у пользователя
     empty_markup = types.ReplyKeyboardRemove()
     bot.send_message(message.chat.id,
                      config.order_msg + str(message.text.lower()),
                      reply_markup=empty_markup)
+
+    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
+    config.orders[message.chat.id] = {'name': cup_name,
+                                      'order': message.text}
+    
+    order_id = config.order_id
+    config.order_id += 1
+    gsheets.send_order_to_google_sheet(order_id, cup_name, message.text)
+
+    # Отправка данных заказа в текстовый файл для первого тестирования
+    user_data = db.select_user_from_person_table(message.from_user.id)
+    if user_data:
+        with open("orders.txt", "a") as fp:
+            fp.write(str(db.Person(*user_data[1:6])) +
+                    '   Напиток: ' +
+                    message.text +
+                    '\n\n')
+

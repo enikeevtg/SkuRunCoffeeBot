@@ -1,4 +1,6 @@
-# СЦЕНАРИЙ РЕГИСТРАЦИИ БЕГУНА ПРИ ПЕРВОМ ВХОДЕ В БОТА
+# Регистрация бегуна при первом входе в бота
+
+
 from bot import bot
 import bot_common_functions as common
 import config
