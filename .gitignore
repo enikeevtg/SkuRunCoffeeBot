@@ -6,6 +6,5 @@ venv
 *.json
 *.sql
 
-bot.py
 bot_token.py
 research.py
