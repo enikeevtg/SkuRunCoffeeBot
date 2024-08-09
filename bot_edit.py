@@ -2,6 +2,7 @@
 
 
 from bot import bot
+import bot_start
 import db
 import config
 import bot_common_functions as common
@@ -9,6 +10,11 @@ import bot_common_functions as common
 
 @bot.message_handler(commands=['edit'])
 def edit(message):
+    user = db.get_cup_name_from_person_table(message.from_user.id)
+    if user == None:
+        bot_start.start(message)
+        return
+
     cup_name = db.get_cup_name_from_person_table(message.from_user.id)
     bot.send_message(message.chat.id, str(cup_name) + config.edit_name_msg)
     bot.register_next_step_handler(message,

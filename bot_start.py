@@ -7,10 +7,9 @@ import config
 import db
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'registration'])
 def start(message):
     db.create_person_table()
-
 
     user = db.get_cup_name_from_person_table(message.from_user.id)
     if user:
@@ -20,7 +19,6 @@ def start(message):
     else:
         bot.send_animation(message.chat.id, config.starting_animation)
         bot.send_message(message.chat.id, config.starting_msg)
-        bot.send_message(message.chat.id, config.cup_name_query_msg)
         bot.register_next_step_handler(message,
                                        common.get_cup_name_from_user, 
                                        registration)

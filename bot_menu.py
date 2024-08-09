@@ -2,6 +2,7 @@
 
 
 from bot import bot
+import bot_start
 import config
 import db
 import bot_gsheets as gsheets
@@ -10,6 +11,11 @@ from telebot import types
 
 @bot.message_handler(commands=['menu'])
 def menu(message):
+    user = db.get_cup_name_from_person_table(message.from_user.id)
+    if user == None:
+        bot_start.start(message)
+        return
+
     ordered_drink = config.orders.get(message.from_user.id, None)
     if ordered_drink is None:
         drinks_keyboard_generator(message, config.choose_drink_msg)
