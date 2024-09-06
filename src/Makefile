@@ -21,5 +21,7 @@ freeze_deps: $(REQUIREMENTS)
 install_deps: $(REQUIREMENTS)
 	$(PIP) install -r $^
 
-research: research.py
-	$(PY) $^
+clean:
+	rm -rf __pycache__
+	rm -rf ../__pycache__
+	rm -rf ../research/__pycache__

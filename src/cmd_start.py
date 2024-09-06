@@ -2,7 +2,7 @@
 
 
 from bot import bot
-import bot_common_functions as common
+import common as common
 import config
 import db
 
@@ -25,14 +25,17 @@ def start(message):
 
 
 def registration(message):
+    user_data = get_user_data_from_message(message)
+    user = db.Person(*user_data)
+    db.insert_user_to_person_table(user)
+    bot.send_message(message.chat.id, f'{user_data[4]}, я тебя запомнил 😄')
+    bot.send_message(message.chat.id, config.commans_msg)
+
+
+def get_user_data_from_message(message):
     user_id = message.from_user.id
     username = message.from_user.username
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
     cup_name = message.text.strip()
-    user = db.Person(user_id, username, first_name, last_name, cup_name)
-    db.insert_user_to_person_table(user)
-    bot.send_message(message.chat.id,
-                     f'{cup_name}, я тебя запомнил 😄')
-    bot.send_message(message.chat.id, config.commans_msg)
-
+    return (user_id, username, first_name, last_name, cup_name)

@@ -3,14 +3,14 @@
 
 from bot import bot
 import config
-from bot_token import token
+from token import token
 import time
 
 # from bot_gsheets import *
-from bot_start import *
-from bot_menu import *
-from bot_name import *
-from bot_edit import *
+from cmd_start import *
+from cmd_menu import *
+from cmd_name import *
+from cmd_edit import *
 
 
 def the_order_has_already_been_placed(message):

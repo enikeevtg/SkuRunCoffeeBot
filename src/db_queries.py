@@ -1,7 +1,7 @@
 # Набор запросов в БД SQLite3
 
 
-query_create_person_table = \
+q_create_person_table = \
   'CREATE TABLE IF NOT EXISTS person ( \
       id INTEGER PRIMARY KEY, \
       user_id INTEGER, \
@@ -12,16 +12,16 @@ query_create_person_table = \
   )'
 
 
-query_insert_user_to_person_table = \
+q_insert_user_to_person_table = \
   'INSERT INTO person (user_id, username, first_name, last_name, cup_name) \
    VALUES (?, ?, ?, ?, ?)'
 
 
-query_check_user_in_person_table = \
+q_check_user_in_person_table = \
   'SELECT * FROM person WHERE user_id = ?'
 
 
-query_update_user_in_person_table = \
+q_update_user_in_person_table = \
   'UPDATE person \
    SET cup_name = ? \
    WHERE user_id = ?'

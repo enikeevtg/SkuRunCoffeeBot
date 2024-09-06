@@ -2,7 +2,7 @@
 
 
 from bot import bot
-import bot_start
+import cmd_start
 import db
 
 
@@ -10,7 +10,7 @@ import db
 def show_current_cup_name(message):
     user = db.get_cup_name_from_person_table(message.from_user.id)
     if user == None:
-        bot_start.start(message)
+        cmd_start.start(message)
         return
 
     cup_name = db.get_cup_name_from_person_table(message.from_user.id)
