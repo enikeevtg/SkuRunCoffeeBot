@@ -3,7 +3,6 @@
 
 from bot import bot
 import config
-from token import token
 import time
 
 # from bot_gsheets import *
