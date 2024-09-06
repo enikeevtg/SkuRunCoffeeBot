@@ -3,7 +3,8 @@
 PY = python3
 PIP = pip3
 
-MAIN_SCRIPT = main.py
+# MAIN_SCRIPT = main.py
+MAIN_SCRIPT = bot.py
 REQUIREMENTS = requirements.txt
 
 DB = ./skurun.sql

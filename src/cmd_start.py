@@ -2,8 +2,8 @@
 
 
 from bot import bot
-import common as common
-import config
+import utils.utils as utils
+import messages
 import db
 
 
@@ -15,12 +15,12 @@ def start(message):
     if user:
         bot.send_message(message.chat.id,
                          f'О, а я тебя знаю! Ты - {user} 😄')
-        bot.send_message(message.chat.id, config.commans_msg)
+        bot.send_message(message.chat.id, messages.commands)
     else:
-        bot.send_animation(message.chat.id, config.starting_animation)
-        bot.send_message(message.chat.id, config.starting_msg)
+        bot.send_animation(message.chat.id, messages.starting_animation)
+        bot.send_message(message.chat.id, messages.register_request)
         bot.register_next_step_handler(message,
-                                       common.get_cup_name_from_user,
+                                       utils.get_cup_name_from_user,
                                        registration)
 
 
@@ -29,7 +29,7 @@ def registration(message):
     user = db.Person(*user_data)
     db.insert_user_to_person_table(user)
     bot.send_message(message.chat.id, f'{user_data[4]}, я тебя запомнил 😄')
-    bot.send_message(message.chat.id, config.commans_msg)
+    bot.send_message(message.chat.id, messages.commands)
 
 
 def get_user_data_from_message(message):

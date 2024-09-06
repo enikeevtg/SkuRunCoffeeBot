@@ -3,7 +3,7 @@
 
 import sqlite3
 import db_queries
-import config
+from decouple import config
 
 
 class Person:
@@ -31,7 +31,7 @@ first_name: {self.first_name}
   cup_name: {self.cup_name}
 '''
 
-    def get_data(self) -> tuple:
+    def get_person_data(self) -> tuple:
         return (self.user_id,
                 self.username,
                 self.first_name,
@@ -39,9 +39,8 @@ first_name: {self.first_name}
                 self.cup_name)
 
 
-
 def db_connection():
-    connection = sqlite3.connect(config.db_file)
+    connection = sqlite3.connect(config('DB_FILE'))
     cursor = connection.cursor()
     return connection, cursor
 
@@ -62,7 +61,7 @@ def insert_user_to_person_table(user: Person):
     connection, cursor = db_connection()
     cursor.execute(db_queries.q_create_person_table)
     cursor.execute(db_queries.q_insert_user_to_person_table,
-                   user.get_data()
+                   user.get_person_data()
                   )
     connection.commit()
     db_closing(connection, cursor)

@@ -3,7 +3,7 @@
 
 from bot import bot
 import cmd_start
-import config
+import messages
 import db
 import gsheets as gsheets
 from telebot import types
@@ -16,9 +16,9 @@ def menu(message):
         cmd_start.start(message)
         return
 
-    ordered_drink = config.orders.get(message.from_user.id, None)
+    ordered_drink = messages.orders.get(message.from_user.id, None)
     if ordered_drink is None:
-        drinks_keyboard_generator(message, config.choose_drink_msg)
+        drinks_keyboard_generator(message, messages.choose_drink_msg)
     else:
         bot.send_message(message.chat.id,
                          str(ordered_drink['name']) +
@@ -30,7 +30,7 @@ def menu(message):
 
 def drinks_keyboard_generator(message, reply_message):
     types_markup = types.ReplyKeyboardMarkup()
-    for coffee in config.types_of_coffee:
+    for coffee in messages.types_of_coffee:
         types_markup.add(types.KeyboardButton(coffee))
     bot.send_message(message.chat.id, reply_message,
                      reply_markup=types_markup)
@@ -38,19 +38,19 @@ def drinks_keyboard_generator(message, reply_message):
 
 
 def show_options_keyboard(message):
-    if message.text not in config.types_of_coffee:
-        drinks_keyboard_generator(message, config.try_again_msg)
+    if message.text not in messages.types_of_coffee:
+        drinks_keyboard_generator(message, messages.try_again_msg)
         return
 
     if message.text == 'Фильтр-кофе':
         create_order(message, None)
         return
 
-    options = config.amerincano_options
+    options = messages.amerincano_options
     if message.text == 'Шиповник':
-        options = config.rosehip_options
+        options = messages.rosehip_options
 
-    options_keyboard_generator(message, options, config.choose_option_msg)
+    options_keyboard_generator(message, options, messages.choose_option_msg)
 
 
 def options_keyboard_generator(message, options, reply_message):
@@ -63,24 +63,24 @@ def options_keyboard_generator(message, options, reply_message):
 
 
 def create_order(message, options):
-    if message.text not in (config.amerincano_options +
-                            config.rosehip_options +
-                            config.types_of_coffee):
-        options_keyboard_generator(message, options, config.try_again_msg)
+    if message.text not in (messages.amerincano_options +
+                            messages.rosehip_options +
+                            messages.types_of_coffee):
+        options_keyboard_generator(message, options, messages.try_again_msg)
         return
 
     # Удаление клавиатуры у пользователя
     empty_markup = types.ReplyKeyboardRemove()
     bot.send_message(message.chat.id,
-                     config.order_msg + str(message.text.lower()),
+                     messages.order_msg + str(message.text.lower()),
                      reply_markup=empty_markup)
 
     cup_name = db.get_cup_name_from_person_table(message.from_user.id)
-    config.orders[message.chat.id] = {'name': cup_name,
+    messages.orders[message.chat.id] = {'name': cup_name,
                                       'order': message.text}
 
-    order_id = config.order_id
-    config.order_id += 1
+    order_id = messages.order_id
+    messages.order_id += 1
     gsheets.send_order_to_google_sheet(order_id, cup_name, message.text)
 
     # Отправка данных заказа в текстовый файл для первого тестирования
