@@ -39,6 +39,14 @@ first_name: {self.first_name}
                 self.cup_name)
 
 
+def person_table_check():
+    try:
+        fp = open(config('DB_FILE'), 'r')
+        fp.close()
+    except:
+        create_person_table()
+
+
 def db_connection():
     connection = sqlite3.connect(config('DB_FILE'))
     cursor = connection.cursor()
@@ -58,6 +66,7 @@ def create_person_table():
 
 
 def insert_user_to_person_table(user: Person):
+    person_table_check()
     connection, cursor = db_connection()
     cursor.execute(db_queries.q_create_person_table)
     cursor.execute(db_queries.q_insert_user_to_person_table,
@@ -68,6 +77,7 @@ def insert_user_to_person_table(user: Person):
 
 
 def select_user_from_person_table(user_id: int) -> tuple:
+    person_table_check()
     connection, cursor = db_connection()
     cursor.execute(db_queries.q_check_user_in_person_table, (user_id,))
     user = cursor.fetchall()
@@ -81,6 +91,7 @@ def get_cup_name_from_person_table(user_id: int):
 
 
 def update_cup_name_in_person_table(user_id: int, cup_name: str):
+    person_table_check()
     connection, cursor = db_connection()
     cursor.execute(db_queries.q_update_user_in_person_table,
                    (cup_name,
