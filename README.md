@@ -42,7 +42,9 @@
 Заказы пользователей отправляются в google sheets с помощью подключения соответстующего API.
 
 
-## Материалыб использованные в процессе написания кода
+## Материалы, использованные в процессе написания кода
+
++ [Официальная документация](https://docs.aiogram.dev/en/latest/)
 
 + [habr.yakvenalex](https://habr.com/ru/users/yakvenalex/)
 
@@ -64,3 +66,12 @@
 
     + [Telegram Боты на Aiogram 3.x: Профиль, админ-панель и реферальная система](https://habr.com/ru/articles/822809/)
 
++ [Пишем Telegram-ботов с aiogram 3.x](https://mastergroosha.github.io/aiogram-3-guide/)
+
+    + [aiogram-3-guide](https://github.com/MasterGroosha/aiogram-3-guide)
+
++ [habr.ivankarmanow](https://habr.com/ru/users/ivankarmanow/)
+  
+    + [За границей Hello World: полный гайд по разработке Telegram ботов с помощью Python и Aiogram 3. Часть 1](https://habr.com/ru/articles/732136/)
+
+    + [За границей Hello World: полный гайд по разработке Telegram ботов на Python + Aiogram 3. Часть 2: Меню и OpenAI API](https://habr.com/ru/articles/733732/)
