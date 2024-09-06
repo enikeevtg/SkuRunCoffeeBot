@@ -8,7 +8,7 @@ REQUIREMENTS = requirements.txt
 
 DB = ./skurun.sql
 
-launch:
+run:
 #	rm -rf $(DB)
 	$(PY) $(MAIN_SCRIPT)
 

@@ -1,10 +1,8 @@
-# SkuRunCoffeeBot
+# SkuRunCoffeeBot_v2
 
 Телеграм-бот для бегового клуба кофейни Скуратов в Казани.
 
-![photo](./img/IMG_7981.JPG)
-
-Использована библиотека [pyTelegramBotAPI](https://pypi.org/project/pyTelegramBotAPI/)
+Использована библиотека aiogram.
 
 
 ## Команды
