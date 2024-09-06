@@ -7,7 +7,7 @@ import config
 import db
 
 
-@bot.message_handler(commands=['start', 'registration'])
+@bot.message_handler(commands=['start'])
 def start(message):
     db.create_person_table()
 
@@ -20,7 +20,7 @@ def start(message):
         bot.send_animation(message.chat.id, config.starting_animation)
         bot.send_message(message.chat.id, config.starting_msg)
         bot.register_next_step_handler(message,
-                                       common.get_cup_name_from_user, 
+                                       common.get_cup_name_from_user,
                                        registration)
 
 

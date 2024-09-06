@@ -35,7 +35,7 @@ def drinks_keyboard_generator(message, reply_message):
     bot.send_message(message.chat.id, reply_message,
                      reply_markup=types_markup)
     bot.register_next_step_handler(message, show_options_keyboard)
-    
+
 
 def show_options_keyboard(message):
     if message.text not in config.types_of_coffee:
@@ -60,7 +60,7 @@ def options_keyboard_generator(message, options, reply_message):
     bot.send_message(message.chat.id, reply_message,
                      reply_markup=options_markup)
     bot.register_next_step_handler(message, create_order, options)
-    
+
 
 def create_order(message, options):
     if message.text not in (config.amerincano_options +
@@ -78,7 +78,7 @@ def create_order(message, options):
     cup_name = db.get_cup_name_from_person_table(message.from_user.id)
     config.orders[message.chat.id] = {'name': cup_name,
                                       'order': message.text}
-    
+
     order_id = config.order_id
     config.order_id += 1
     gsheets.send_order_to_google_sheet(order_id, cup_name, message.text)
@@ -91,4 +91,3 @@ def create_order(message, options):
                     '   Напиток: ' +
                     message.text +
                     '\n\n')
-

@@ -1,4 +1,4 @@
-.PHONY: venv 
+.PHONY: venv
 
 PY = python3
 PIP = pip3
