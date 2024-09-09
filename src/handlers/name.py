@@ -5,6 +5,7 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
+from db_handler import db
 from handlers import start
 
 
@@ -12,7 +13,7 @@ import sys
 sys.path.append('../')
 import bot
 import messages
-import db
+# import db
 
 
 router = Router()

@@ -8,6 +8,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from utils import gsheets
 from keyboards.keyboards import menu_kb
+from db_handler import db
 from handlers import start
 
 
@@ -15,7 +16,7 @@ import sys
 sys.path.append('../')
 import bot
 import messages
-import db
+# import db
 
 
 router = Router()
