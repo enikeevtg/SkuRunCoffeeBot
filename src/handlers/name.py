@@ -13,7 +13,6 @@ import sys
 sys.path.append('../')
 import bot
 import messages
-# import db
 
 
 router = Router()

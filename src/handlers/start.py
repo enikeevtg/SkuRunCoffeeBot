@@ -12,7 +12,6 @@ from db_handler import db
 import sys
 sys.path.append('../')
 import messages
-# import db
 
 
 router = Router()
