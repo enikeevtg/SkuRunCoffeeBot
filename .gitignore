@@ -7,6 +7,7 @@ venv
 *.json
 *.sql
 
+.env
 __token.py
 research
 reserves
