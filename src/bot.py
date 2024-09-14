@@ -15,6 +15,11 @@ from db_handler import db
 from handlers import start, menu, edit, name
 
 
+# Для запуска на pythonanywhere.com:
+# from aiogram.client.session.aiohttp import AiohttpSession
+# session = AiohttpSession(proxy="http://proxy.server:3128")
+
+
 async def send_gsheet_to_admins(bot: Bot):
     admins = [int(admin_id) for admin_id in config('ADMINS').split(',')]
     for admin in admins:
@@ -27,6 +32,8 @@ async def send_gsheet_to_admins(bot: Bot):
 
 async def main():
     bot = Bot(token=config('TOKEN'))
+    # Для запуска на pythonanywhere.com:
+    # bot = Bot(token=config('TOKEN'), session=session)
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.include_routers(start.router, menu.router, edit.router, name.router)
