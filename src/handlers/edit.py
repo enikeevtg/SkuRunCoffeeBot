@@ -1,6 +1,5 @@
 # Редактирование имени бегуна
 
-
 from aiogram import Router
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -13,6 +12,7 @@ from handlers import start, messages, vars
 router = Router()
 
 
+# FSM states
 class Edition(StatesGroup):
     set_new_name = State()
 

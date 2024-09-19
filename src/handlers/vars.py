@@ -1,10 +1,12 @@
-# Some variables handlers
+# Некоторые переменные для обработчиков команд
 
-# handlers.menu
 from decouple import config
 
 
+# handlers.menu
 order_id = int(config('FIRST_ORDER_ROW'))
+
+# handlers.menu
 # Временная база заказов в текущий день
 # {user_id: {
 #            'name': 'Тагир',
@@ -13,7 +15,7 @@ order_id = int(config('FIRST_ORDER_ROW'))
 # }
 orders = {}
 
-
+# handlers.menu
 # КАТЕГОРИИ И ПОДКАТЕГОРИИ НАПИТКОВ
 drink_names = ['Американо', 'Шиповник', 'Фильтр-кофе']
 amerincano_options = ['Американо', 'Американо со сливками',

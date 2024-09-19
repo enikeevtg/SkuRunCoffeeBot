@@ -1,6 +1,5 @@
 # Обработка заказа напитка
 
-
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -15,6 +14,7 @@ from handlers import messages, start, vars
 router = Router()
 
 
+# FSM states
 class OrderDrink(StatesGroup):
     choosing_drink = State()
     choosing_option = State()

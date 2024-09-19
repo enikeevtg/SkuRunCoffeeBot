@@ -1,12 +1,6 @@
-# 
-
+# Клавиатуры
 
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
-
-
-import sys
-sys.path.append('../')
-import messages
 
 
 def menu_kb(names_list: int) -> ReplyKeyboardMarkup:

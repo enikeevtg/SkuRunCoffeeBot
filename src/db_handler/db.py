@@ -1,15 +1,11 @@
 # Функции работы с БД SQLite3
 
-
 from aiogram import Router
 
 
 import sqlite3
 from db_handler import db_queries
 from decouple import config
-
-
-# router = Router()
 
 
 class Person:

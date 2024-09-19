@@ -1,6 +1,5 @@
 # Регистрация бегуна при первом входе в бота
 
-
 from aiogram import Router
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
@@ -13,6 +12,7 @@ from handlers import messages
 router = Router()
 
 
+# FSM states
 class Registration(StatesGroup):
     set_name = State()
 
