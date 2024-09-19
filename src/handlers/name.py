@@ -9,12 +9,6 @@ from db_handler import db
 from handlers import start
 
 
-import sys
-sys.path.append('../')
-import bot
-import messages
-
-
 router = Router()
 
 

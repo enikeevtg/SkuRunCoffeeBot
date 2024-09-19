@@ -7,13 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from db_handler import db
-from handlers import start
-
-
-import sys
-sys.path.append('../')
-import bot
-import messages
+from handlers import start, messages, vars
 
 
 router = Router()
@@ -45,7 +39,7 @@ async def set_new_name(message: Message, state: FSMContext):
         cup_name = message.text.strip()    
         reply_msg = 'Ну всё, в следующий раз на твоём стаканчике ' + \
                     'мы напишем ' + str(cup_name) + ' 😁'
-        if message.from_user.id not in bot.orders:
+        if message.from_user.id not in vars.orders:
             reply_msg = 'Ну всё, поменял твоё имя на ' + \
                         str(cup_name) + ' 😁\n' + \
                         'Теперь жми /menu и выбирай свой напиток'

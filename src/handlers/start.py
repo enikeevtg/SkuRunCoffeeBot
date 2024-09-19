@@ -7,11 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from db_handler import db
-
-
-import sys
-sys.path.append('../')
-import messages
+from handlers import messages
 
 
 router = Router()
