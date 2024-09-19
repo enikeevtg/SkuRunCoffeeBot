@@ -6,7 +6,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
 from utils import gsheets
-from keyboards.keyboards import menu_kb
+from keyboards import menu_kb_builder
 from db_handler import db
 from handlers import messages, start, vars
 
@@ -37,7 +37,7 @@ async def cmd_menu(message: Message, state: FSMContext):
                              'когда ты вернёшься с пробежки 🤗')
     else:
         await message.answer(text=messages.choose_drink, 
-                             reply_markup=menu_kb(vars.drink_names))
+                             reply_markup=menu_kb_builder(vars.drink_names))
         await state.set_state(OrderDrink.choosing_drink)
 
 
@@ -50,22 +50,22 @@ async def drink_chosen(message: Message, state: FSMContext):
         await state.clear()
         return
 
-    options = vars.amerincano_options if message.text == 'Американо' \
+    options = vars.americano_options if message.text == 'Американо' \
                                      else vars.rosehip_options
     await message.answer(text=messages.choose_option,
-                         reply_markup=menu_kb(options))
+                         reply_markup=menu_kb_builder(options))
     await state.set_state(OrderDrink.choosing_option)
 
 
 @router.message(OrderDrink.choosing_drink)
 async def drink_choosen_incorrectly(message: Message):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb(vars.drink_names)
+                         reply_markup=menu_kb_builder(vars.drink_names)
                          )
     
 
 @router.message(OrderDrink.choosing_option, F.text.in_(vars.drink_names +
-                                                       vars.amerincano_options + 
+                                                       vars.americano_options + 
                                                        vars.rosehip_options))
 async def option_chosen(message: Message, state: FSMContext):
     await message.answer(messages.success_order_msg + str(message.text.lower()))
@@ -76,7 +76,7 @@ async def option_chosen(message: Message, state: FSMContext):
 @router.message(OrderDrink.choosing_option)
 async def option_choosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
-                      reply_markup=menu_kb(vars.drink_names)
+                      reply_markup=menu_kb_builder(vars.drink_names)
                       )
     await state.set_state(OrderDrink.choosing_drink)
 
