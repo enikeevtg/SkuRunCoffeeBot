@@ -27,6 +27,7 @@ clean:
 	rm -rf ../__pycache__
 	rm -rf ../research/__pycache__
 	rm -rf ../reserves/__pycache__
+	rm -rf ./admin/__pycache__
 	rm -rf ./db_handler/__pycache__
 	rm -rf ./handlers/__pycache__
 	rm -rf ./keyboards/__pycache__

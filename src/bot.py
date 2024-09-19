@@ -11,23 +11,13 @@ import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
-from db_handler import db
+from admin import admin
 from handlers import start, menu, edit, name
 
 
 # Для запуска на pythonanywhere.com:
 # from aiogram.client.session.aiohttp import AiohttpSession
 # session = AiohttpSession(proxy="http://proxy.server:3128")
-
-
-async def send_gsheet_to_admins(bot: Bot):
-    admins = [int(admin_id) for admin_id in config('ADMINS').split(',')]
-    for admin in admins:
-        user_name = db.get_cup_name_from_person_table(admin)
-        await bot.send_message(admin,
-                               user_name + ', я родился 🤗\n' +
-                               'Вот тут ссылка на гугл-таблицу 👇\n' +
-                               'https://docs.google.com/spreadsheets/d/' + config('SPREADSHEET_ID') + '/edit')
 
 
 async def main():
@@ -38,7 +28,7 @@ async def main():
 
     dp.include_routers(start.router, menu.router, edit.router, name.router)
 
-    await send_gsheet_to_admins(bot)
+    await admin.send_gsheet_link(bot)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
@@ -46,8 +36,6 @@ async def main():
 
 if __name__ == '__main__':
     asyncio.run(main())
-
-
 
 
 # def the_order_has_already_been_placed(message):
