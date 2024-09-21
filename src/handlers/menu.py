@@ -4,11 +4,11 @@ from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 from utils import gsheets
 from keyboards import menu_kb_builder
 from db_handler import db
-from handlers import messages, start, vars
+from handlers import messages, start, vars, check_list
 
 
 router = Router()
@@ -20,8 +20,23 @@ class OrderDrink(StatesGroup):
     choosing_option = State()
 
 
+async def check_list_handler(message: Message):
+    if message.from_user.id in check_list:
+        name = db.get_cup_name_from_person_table(message.from_user.id) 
+        await message.answer(f'Ты регистрировался под именем {name}. ' +\
+                             'Давай сперва поменяем его. Жми /edit')
+        check_list.remove(message.from_user.id)
+        with open('handlers/__init__.py', 'w') as fp:
+            fp.write(f'check_list = {check_list}')
+        return True
+
+
 @router.message(StateFilter(None), Command('menu'))
 async def cmd_menu(message: Message, state: FSMContext):
+    # Предложение некоторым пользователям поменять имя
+    if await check_list_handler(message) is True:
+        return
+
     user = db.get_cup_name_from_person_table(message.from_user.id)
     if user == None:
         await start.cmd_start(message, state)
@@ -45,7 +60,8 @@ async def cmd_menu(message: Message, state: FSMContext):
 async def drink_chosen(message: Message, state: FSMContext):
     if message.text == 'Фильтр-кофе':
         await message.answer(messages.success_order_msg +
-                             str(message.text.lower()))
+                             str(message.text.lower()),
+                             reply_markup=ReplyKeyboardRemove())
         create_order(message)
         await state.clear()
         return
@@ -60,15 +76,15 @@ async def drink_chosen(message: Message, state: FSMContext):
 @router.message(OrderDrink.choosing_drink)
 async def drink_choosen_incorrectly(message: Message):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb_builder(vars.drink_names)
-                         )
+                         reply_markup=menu_kb_builder(vars.drink_names))
     
 
 @router.message(OrderDrink.choosing_option, F.text.in_(vars.drink_names +
                                                        vars.americano_options + 
                                                        vars.rosehip_options))
 async def option_chosen(message: Message, state: FSMContext):
-    await message.answer(messages.success_order_msg + str(message.text.lower()))
+    await message.answer(messages.success_order_msg + str(message.text.lower()),
+                         reply_markup=ReplyKeyboardRemove())
     create_order(message)
     await state.clear()
 
@@ -76,8 +92,7 @@ async def option_chosen(message: Message, state: FSMContext):
 @router.message(OrderDrink.choosing_option)
 async def option_choosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
-                      reply_markup=menu_kb_builder(vars.drink_names)
-                      )
+                         reply_markup=menu_kb_builder(vars.drink_names))
     await state.set_state(OrderDrink.choosing_drink)
 
 

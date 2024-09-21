@@ -4,7 +4,7 @@ from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram.types import Message, ReplyKeyboardRemove
 from admin import admins_list
 from utils import gsheets
 from keyboards import menu_kb_builder
@@ -46,7 +46,8 @@ async def choose_drink(message: Message, state: FSMContext):
                 F.text.in_(vars.drink_names))
 async def admin_drink_chosen(message: Message, state: FSMContext):
     if message.text == 'Фильтр-кофе':
-        await message.answer('Записал. Можешь проверить в таблице')
+        await message.answer('Записал. Можешь проверить в таблице',
+                             reply_markup=ReplyKeyboardRemove())
         await state.update_data(drink=message.text)
         await state.set_state(AdminOrderDrink.order_done)
         await create_order(message, state)
@@ -72,7 +73,8 @@ async def admin_drink_choosen_incorrectly(message: Message):
                            vars.americano_options +
                            vars.rosehip_options))
 async def admin_option_chosen(message: Message, state: FSMContext):
-    await message.answer('Записал. Можешь проверить в таблице')
+    await message.answer('Записал. Можешь проверить в таблице',
+                         reply_markup=ReplyKeyboardRemove())
     await state.update_data(drink=message.text)
     await state.set_state(AdminOrderDrink.order_done)
     await create_order(message, state)
@@ -91,8 +93,6 @@ async def create_order(message: Message, state: FSMContext):
     data = await state.get_data()
     cup_name = data.get('name')
     drink = data.get('drink')
-    vars.orders[message.chat.id] = {'name': cup_name, 'drink': drink}
-
     order_id = vars.order_id
     vars.order_id += 1
     gsheets.send_order_to_google_sheet(order_id, cup_name, drink)
