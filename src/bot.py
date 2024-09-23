@@ -13,7 +13,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
 import admin
 from admin import add_order
-from handlers import start, menu, edit, name
+from handlers import start, menu, edit, name, cancel
 
 
 # Для запуска на pythonanywhere.com:
@@ -27,6 +27,7 @@ async def main():
     # bot = Bot(token=config('TOKEN'), session=session)
     dp = Dispatcher(storage=MemoryStorage())
 
+    dp.include_routers(cancel.router)
     dp.include_routers(add_order.router, start.router, menu.router,
                        edit.router, name.router)
 
