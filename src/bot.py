@@ -12,7 +12,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
 import admin
-from admin import add_order
+from admin import add_order, table
 from db_handler import db_models
 from handlers import start, menu, edit, name, cancel
 
@@ -32,7 +32,7 @@ async def main():
 
     dp.include_routers(cancel.router)
     dp.include_routers(add_order.router, start.router, menu.router,
-                       edit.router, name.router)
+                       edit.router, name.router, table.router)
 
     await admin.send_gsheet_link(bot)
 

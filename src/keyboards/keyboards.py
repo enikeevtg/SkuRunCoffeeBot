@@ -1,7 +1,9 @@
 # Клавиатуры
 
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
-import handlers.vars as vars
+from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup,
+                           InlineKeyboardButton, InlineKeyboardMarkup)
+from decouple import config
+
 
 async def menu_kb_builder(names_list: int) -> ReplyKeyboardMarkup:
     buttons_list = []
@@ -15,3 +17,10 @@ async def menu_kb_builder(names_list: int) -> ReplyKeyboardMarkup:
                   )
 
     return keyboard
+
+
+async def table_kb_builder() -> InlineKeyboardMarkup:
+    table_url = 'https://docs.google.com/spreadsheets/d/' +\
+                config('SPREADSHEET_ID') + '/edit'
+    open_table_btn = InlineKeyboardButton(text='Открыть таблицу', url=table_url)
+    return InlineKeyboardMarkup(inline_keyboard=[[open_table_btn]])
