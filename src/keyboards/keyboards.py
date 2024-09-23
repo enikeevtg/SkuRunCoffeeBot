@@ -3,7 +3,7 @@
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 import handlers.vars as vars
 
-def menu_kb_builder(names_list: int) -> ReplyKeyboardMarkup:
+async def menu_kb_builder(names_list: int) -> ReplyKeyboardMarkup:
     buttons_list = []
     for name in names_list:
         buttons_list.append([KeyboardButton(text=name)])

@@ -36,7 +36,7 @@ async def cmd_add_order(message: Message, state: FSMContext):
 @router.message(StateFilter(AdminOrderDrink.set_name))
 async def choose_drink(message: Message, state: FSMContext):
     await message.answer('Выбери напиток из списка',
-                         reply_markup=menu_kb_builder(vars.drink_names))
+                         reply_markup=await menu_kb_builder(vars.drink_names))
     await state.update_data(name=message.text)
     await state.set_state(AdminOrderDrink.choosing_drink)
     await message.answer(state)
@@ -56,7 +56,7 @@ async def admin_drink_chosen(message: Message, state: FSMContext):
     options = vars.americano_options if message.text == 'Американо' \
                                      else vars.rosehip_options
     await message.answer(text=messages.choose_option,
-                         reply_markup=menu_kb_builder(options))
+                         reply_markup=await menu_kb_builder(options))
     await state.update_data(drink=message.text)
     await state.set_state(AdminOrderDrink.choosing_option)
 
@@ -64,7 +64,7 @@ async def admin_drink_chosen(message: Message, state: FSMContext):
 @router.message(StateFilter(AdminOrderDrink.choosing_drink))
 async def admin_drink_choosen_incorrectly(message: Message):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb_builder(vars.drink_names)
+                         reply_markup=await menu_kb_builder(vars.drink_names)
                          )
 
 
@@ -83,7 +83,7 @@ async def admin_option_chosen(message: Message, state: FSMContext):
 @router.message(AdminOrderDrink.choosing_option)
 async def admin_option_choosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb_builder(vars.drink_names)
+                         reply_markup=await menu_kb_builder(vars.drink_names)
                          )
     await state.set_state(AdminOrderDrink.choosing_drink)
 

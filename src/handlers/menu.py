@@ -52,7 +52,7 @@ async def cmd_menu(message: Message, state: FSMContext):
                              'когда ты вернёшься с пробежки 🤗')
     else:
         await message.answer(text=messages.choose_drink, 
-                             reply_markup=menu_kb_builder(vars.drink_names))
+                             reply_markup=await menu_kb_builder(vars.drink_names))
         await state.set_state(OrderDrink.choosing_drink)
 
 
@@ -69,15 +69,15 @@ async def drink_chosen(message: Message, state: FSMContext):
     options = vars.americano_options if message.text == 'Американо' \
                                      else vars.rosehip_options
     await message.answer(text=messages.choose_option,
-                         reply_markup=menu_kb_builder(options))
+                         reply_markup=await menu_kb_builder(options))
     await state.set_state(OrderDrink.choosing_option)
 
 
 @router.message(OrderDrink.choosing_drink)
 async def drink_choosen_incorrectly(message: Message):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb_builder(vars.drink_names))
-    
+                         reply_markup=await menu_kb_builder(vars.drink_names))
+
 
 @router.message(OrderDrink.choosing_option, F.text.in_(vars.drink_names +
                                                        vars.americano_options + 
@@ -92,7 +92,7 @@ async def option_chosen(message: Message, state: FSMContext):
 @router.message(OrderDrink.choosing_option)
 async def option_choosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
-                         reply_markup=menu_kb_builder(vars.drink_names))
+                         reply_markup=await menu_kb_builder(vars.drink_names))
     await state.set_state(OrderDrink.choosing_drink)
 
 
