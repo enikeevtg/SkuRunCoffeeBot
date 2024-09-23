@@ -8,8 +8,7 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from admin import admins_list
 from utils import gsheets
 from keyboards import menu_kb_builder
-from db_handler import db
-from handlers import menu, messages, vars
+from handlers import messages, vars
 
 
 router = Router()
@@ -23,12 +22,9 @@ class AdminOrderDrink(StatesGroup):
     order_done = State()
 
 
-@router.message(StateFilter(None), Command('add_order'))
+@router.message(StateFilter(None), Command('add_order'),
+                F.from_user.id.in_(admins_list))
 async def cmd_add_order(message: Message, state: FSMContext):
-    if message.from_user.id not in admins_list:
-        message.answer('Недостаточно прав для использования данной команды')
-        return
-
     await message.answer('Введи имя')
     await state.set_state(AdminOrderDrink.set_name)
 
@@ -39,7 +35,6 @@ async def choose_drink(message: Message, state: FSMContext):
                          reply_markup=await menu_kb_builder(vars.drink_names))
     await state.update_data(name=message.text)
     await state.set_state(AdminOrderDrink.choosing_drink)
-    await message.answer(state)
 
 
 @router.message(StateFilter(AdminOrderDrink.choosing_drink),
@@ -50,7 +45,7 @@ async def admin_drink_chosen(message: Message, state: FSMContext):
                              reply_markup=ReplyKeyboardRemove())
         await state.update_data(drink=message.text)
         await state.set_state(AdminOrderDrink.order_done)
-        await create_order(message, state)
+        await create_order(state)
         return
 
     options = vars.americano_options if message.text == 'Американо' \
@@ -77,7 +72,7 @@ async def admin_option_chosen(message: Message, state: FSMContext):
                          reply_markup=ReplyKeyboardRemove())
     await state.update_data(drink=message.text)
     await state.set_state(AdminOrderDrink.order_done)
-    await create_order(message, state)
+    await create_order(state)
 
 
 @router.message(AdminOrderDrink.choosing_option)
@@ -89,7 +84,7 @@ async def admin_option_choosen_incorrectly(message: Message, state: FSMContext):
 
 
 @router.message(AdminOrderDrink.order_done)
-async def create_order(message: Message, state: FSMContext):
+async def create_order(state: FSMContext):
     data = await state.get_data()
     cup_name = data.get('name')
     drink = data.get('drink')
