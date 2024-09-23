@@ -22,11 +22,11 @@ class AdminOrderDrink(StatesGroup):
     order_done = State()
 
 
-@router.message(StateFilter(None), Command('add_order'),
+@router.message(Command('add_order'),
                 F.from_user.id.in_(admins_list))
 async def cmd_add_order(message: Message, state: FSMContext):
     await message.answer('Введи имя')
-    # await state.update_data(prev_state = state.get_state())
+    await state.update_data(prev_state=await state.get_state())
     await state.set_state(AdminOrderDrink.set_name)
 
 
@@ -34,7 +34,7 @@ async def cmd_add_order(message: Message, state: FSMContext):
 async def choose_drink(message: Message, state: FSMContext):
     await message.answer('Выбери напиток из списка',
                          reply_markup=await menu_kb_builder(vars.drink_names))
-    await state.update_data(name=message.text)
+    await state.update_data(add_name=message.text)
     await state.set_state(AdminOrderDrink.choosing_drink)
 
 
@@ -58,7 +58,7 @@ async def admin_drink_chosen(message: Message, state: FSMContext):
 
 
 @router.message(StateFilter(AdminOrderDrink.choosing_drink))
-async def admin_drink_choosen_incorrectly(message: Message):
+async def admin_drink_chosen_incorrectly(message: Message):
     await message.answer(text=messages.try_again,
                          reply_markup=await menu_kb_builder(vars.drink_names)
                          )
@@ -77,19 +77,18 @@ async def admin_option_chosen(message: Message, state: FSMContext):
 
 
 @router.message(AdminOrderDrink.choosing_option)
-async def admin_option_choosen_incorrectly(message: Message, state: FSMContext):
+async def admin_option_chosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
-                         reply_markup=await menu_kb_builder(vars.drink_names)
-                         )
+                         reply_markup=await menu_kb_builder(vars.drink_names))
     await state.set_state(AdminOrderDrink.choosing_drink)
 
 
 @router.message(AdminOrderDrink.order_done)
 async def create_order(state: FSMContext):
     data = await state.get_data()
-    cup_name = data.get('name')
+    cup_name = data.get('add_name')
     drink = data.get('drink')
     order_id = vars.order_id
     vars.order_id += 1
     gsheets.send_order_to_google_sheet(order_id, cup_name, drink)
-    await state.clear()
+    await state.set_state(data['prev_state'])

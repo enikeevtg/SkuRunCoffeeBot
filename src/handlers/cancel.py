@@ -6,14 +6,16 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
 from handlers.start import Registration
-from handlers.menu import OrderDrink
+from handlers.menu import DrinkOrder
 
 
 router = Router()
 
 
 cmd_cancel_exclusions = [
-    Registration.set_name
+    Registration.set_name,
+    DrinkOrder.order_confirmation,
+    DrinkOrder.order_done
 ]
     
 

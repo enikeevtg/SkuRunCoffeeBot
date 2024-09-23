@@ -4,9 +4,9 @@ from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from utils import gsheets
-from keyboards import menu_kb_builder
+from keyboards import menu_kb_builder, confirmation_kb_builder
 from db_handler import db_models
 from handlers import messages, start, vars, check_list
 
@@ -15,9 +15,11 @@ router = Router()
 
 
 # FSM states
-class OrderDrink(StatesGroup):
+class DrinkOrder(StatesGroup):
     choosing_drink = State()
     choosing_option = State()
+    order_confirmation = State()
+    order_done = State()
 
 
 async def check_list_handler(message: Message):
@@ -32,6 +34,17 @@ async def check_list_handler(message: Message):
     return False
 
 
+@router.message(Command('menu'),
+                StateFilter(DrinkOrder.order_done))
+async def cmd_menu(message: Message, state: FSMContext):
+    data = await state.get_data()
+    name: str = data['name']
+    drink: str = data['drink']
+    await message.answer(f'{name}, твой заказ ({drink.lower()}) уже отправил ' +
+                         'баристе. Он будет с нетерпением ждать, когда ты ' +
+                         'вернёшься с пробежки 🤗')
+
+
 @router.message(StateFilter(None), Command('menu'))
 async def cmd_menu(message: Message, state: FSMContext):
     # Предложение некоторым пользователям поменять имя
@@ -44,64 +57,74 @@ async def cmd_menu(message: Message, state: FSMContext):
         await start.cmd_start(message, state)
         return
 
-    order = vars.orders.get(message.from_user.id, None)
-    if order:
-        await message.answer(str(order['name']) +
-                             ', твой заказ (' +
-                             str(order['drink'].lower()) +
-                             ') уже отправил баристе. ' +
-                             'Он будет с нетерпением ждать, ' +
-                             'когда ты вернёшься с пробежки 🤗')
-    else:
-        await message.answer(text=messages.choose_drink, 
-                             reply_markup=await menu_kb_builder(vars.drink_names))
-        await state.set_state(OrderDrink.choosing_drink)
+    await message.answer(text=messages.choose_drink, 
+                          reply_markup=await menu_kb_builder(vars.drink_names))
+    name = db_models.get_cup_name_from_person_table(message.from_user.id)
+    await state.update_data(name = name)
+    await state.set_state(DrinkOrder.choosing_drink)
 
 
-@router.message(OrderDrink.choosing_drink, F.text.in_(vars.drink_names))
+@router.message(DrinkOrder.choosing_drink, F.text.in_(vars.drink_names))
 async def drink_chosen(message: Message, state: FSMContext):
-    if message.text == 'Фильтр-кофе':
-        await message.answer(messages.success_order_msg +
-                             str(message.text.lower()),
-                             reply_markup=ReplyKeyboardRemove())
-        create_order(message)
-        await state.clear()
+    drink = message.text
+    await state.update_data(drink=drink)
+
+    if drink == 'Фильтр-кофе':
+        await option_chosen(message, state)
         return
 
-    options = vars.americano_options if message.text == 'Американо' \
-                                     else vars.rosehip_options
+    options = vars.drink_options[drink]
     await message.answer(text=messages.choose_option,
                          reply_markup=await menu_kb_builder(options))
-    await state.set_state(OrderDrink.choosing_option)
+    await state.set_state(DrinkOrder.choosing_option)
 
 
-@router.message(OrderDrink.choosing_drink)
-async def drink_choosen_incorrectly(message: Message):
+@router.message(DrinkOrder.choosing_drink)
+async def drink_chosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
                          reply_markup=await menu_kb_builder(vars.drink_names))
+    await state.set_state(DrinkOrder.choosing_option)
 
 
-@router.message(OrderDrink.choosing_option, F.text.in_(vars.drink_names +
-                                                       vars.americano_options + 
-                                                       vars.rosehip_options))
+@router.message(DrinkOrder.choosing_option,
+                F.text.in_(vars.americano_options + vars.rosehip_options))
 async def option_chosen(message: Message, state: FSMContext):
-    await message.answer(messages.success_order_msg + str(message.text.lower()),
-                         reply_markup=ReplyKeyboardRemove())
-    create_order(message)
-    await state.clear()
+    await state.update_data(drink=message.text)
+    await order_confirmation(message, state)
 
 
-@router.message(OrderDrink.choosing_option)
-async def option_choosen_incorrectly(message: Message, state: FSMContext):
+    # await message.answer(messages.success_order_msg + str(message.text.lower()),
+                        #  reply_markup=ReplyKeyboardRemove())
+    # create_order(message)
+    # await state.update_data(drink=message.text)
+    # await state.set_state(DrinkOrder.order_confirmation)
+
+
+@router.message(DrinkOrder.choosing_option)
+async def option_chosen_incorrectly(message: Message, state: FSMContext):
+    drink = await state.get_data().get('drink')
     await message.answer(text=messages.try_again,
-                         reply_markup=await menu_kb_builder(vars.drink_names))
-    await state.set_state(OrderDrink.choosing_drink)
+                  reply_markup=await menu_kb_builder(vars.drink_options[drink]))
+    await state.set_state(DrinkOrder.choosing_option)
 
 
-def create_order(message):
-    cup_name = db_models.get_cup_name_from_person_table(message.from_user.id)
-    vars.orders[message.chat.id] = {'name': cup_name, 'drink': message.text}
+async def order_confirmation(message: Message, state: FSMContext):
+    data = await state.get_data()
+    await message.answer(f'Твой заказ:\n{data['name']} - {data['drink']}',
+                         reply_markup=ReplyKeyboardRemove())
+    await message.answer(f'Подтверждаешь?',
+                         reply_markup=await confirmation_kb_builder())
+
+
+@router.callback_query(F.data == 'create_order')
+async def create_order(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+    await callback.message.edit_text(messages.success_order_msg +
+                                     str(data['drink'].lower()))
+
+    await state.set_state(DrinkOrder.order_done)
+    vars.orders[callback.from_user.id] = data
 
     order_id = vars.order_id
     vars.order_id += 1
-    gsheets.send_order_to_google_sheet(order_id, cup_name, message.text)
+    gsheets.send_order_to_google_sheet(order_id, data['name'], data['drink'])
