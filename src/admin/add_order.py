@@ -26,6 +26,7 @@ class AdminOrderDrink(StatesGroup):
                 F.from_user.id.in_(admins_list))
 async def cmd_add_order(message: Message, state: FSMContext):
     await message.answer('Введи имя')
+    # await state.update_data(prev_state = state.get_state())
     await state.set_state(AdminOrderDrink.set_name)
 
 

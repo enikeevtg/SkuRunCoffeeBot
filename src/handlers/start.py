@@ -5,7 +5,7 @@ from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-from db_handler import db
+from db_handler import db_models
 from handlers import messages
 
 
@@ -19,9 +19,7 @@ class Registration(StatesGroup):
 
 @router.message(StateFilter(None), CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
-    db.create_person_table()
-
-    user = db.get_cup_name_from_person_table(message.from_user.id)
+    user = db_models.get_cup_name_from_person_table(message.from_user.id)
     if user:
         await message.answer(f'О, а я тебя знаю! Ты - {user} 😄\n\n' +
                              messages.commands)
@@ -38,10 +36,10 @@ async def set_name(message: Message, state: FSMContext):
         await message.answer(messages.incorrect_name)
     else:
         user_data = get_user_data_from_message(message)
-        user = db.Person(*user_data)
+        user = db_models.Person(*user_data)
         await message.answer(f'{user_data[4]}, я тебя запомнил 😄\n\n' +
                              messages.commands)
-        db.insert_user_to_person_table(user)
+        db_models.insert_user_to_person_table(user)
         await state.clear()
 
 

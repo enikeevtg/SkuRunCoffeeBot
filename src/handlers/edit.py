@@ -5,7 +5,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message
-from db_handler import db
+from db_handler import db_models
 from handlers import start, messages, vars
 
 
@@ -19,7 +19,8 @@ class Edition(StatesGroup):
 
 @router.message(StateFilter(None), Command('edit'))
 async def cmd_edit(message: Message, state: FSMContext):
-    user = db.get_cup_name_from_person_table(message.from_user.id)
+    # Временная проверка наличия пользователя в базе данных
+    user = db_models.get_cup_name_from_person_table(message.from_user.id)
     if user == None:
         await start.cmd_start(message, state)
         return
@@ -45,5 +46,5 @@ async def set_new_name(message: Message, state: FSMContext):
                         'Теперь жми /menu и выбирай свой напиток'
 
         await message.answer(reply_msg)
-        db.update_cup_name_in_person_table(user_id, cup_name)
+        db_models.update_cup_name_in_person_table(user_id, cup_name)
         await state.clear()

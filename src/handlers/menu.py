@@ -7,7 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 from utils import gsheets
 from keyboards import menu_kb_builder
-from db_handler import db
+from db_handler import db_models
 from handlers import messages, start, vars, check_list
 
 
@@ -22,13 +22,14 @@ class OrderDrink(StatesGroup):
 
 async def check_list_handler(message: Message):
     if message.from_user.id in check_list:
-        name = db.get_cup_name_from_person_table(message.from_user.id) 
+        name = db_models.get_cup_name_from_person_table(message.from_user.id) 
         await message.answer(f'Ты регистрировался под именем {name}. ' +\
                              'Давай сперва поменяем его. Жми /edit')
         check_list.remove(message.from_user.id)
         with open('handlers/__init__.py', 'w') as fp:
             fp.write(f'check_list = {check_list}')
         return True
+    return False
 
 
 @router.message(StateFilter(None), Command('menu'))
@@ -37,12 +38,13 @@ async def cmd_menu(message: Message, state: FSMContext):
     if await check_list_handler(message) is True:
         return
 
-    user = db.get_cup_name_from_person_table(message.from_user.id)
+    # Временная проверка наличия пользователя в базе данных
+    user = db_models.get_cup_name_from_person_table(message.from_user.id)
     if user == None:
         await start.cmd_start(message, state)
         return
 
-    order: str = vars.orders.get(message.from_user.id, None)
+    order = vars.orders.get(message.from_user.id, None)
     if order:
         await message.answer(str(order['name']) +
                              ', твой заказ (' +
@@ -97,7 +99,7 @@ async def option_choosen_incorrectly(message: Message, state: FSMContext):
 
 
 def create_order(message):
-    cup_name = db.get_cup_name_from_person_table(message.from_user.id)
+    cup_name = db_models.get_cup_name_from_person_table(message.from_user.id)
     vars.orders[message.chat.id] = {'name': cup_name, 'drink': message.text}
 
     order_id = vars.order_id

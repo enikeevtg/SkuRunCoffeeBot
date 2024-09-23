@@ -6,6 +6,7 @@ venv
 *.log
 *.json
 *.sql
+*.sqlite3
 
 .env
 __token.py
