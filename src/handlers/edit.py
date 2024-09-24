@@ -17,7 +17,10 @@ class Edition(StatesGroup):
     set_new_name = State()
 
 
-@router.message(StateFilter(None), Command('edit'))
+
+
+
+@router.message(Command('edit'))
 async def cmd_edit(message: Message, state: FSMContext):
     # Временная проверка наличия пользователя в базе данных
     user = db_models.get_cup_name_from_person_table(message.from_user.id)
@@ -25,7 +28,8 @@ async def cmd_edit(message: Message, state: FSMContext):
         await start.cmd_start(message, state)
         return
 
-    await message.answer(str(user) + messages.edit_name)
+    await message.answer(f'{user}, ниже введи новое имя ✍️')
+    await state.update_data(prev_state=await state.get_state())
     await state.set_state(Edition.set_new_name)
 
 
@@ -37,7 +41,7 @@ async def set_new_name(message: Message, state: FSMContext):
         await message.answer(messages.incorrect_name)
     else:
         user_id = message.from_user.id
-        cup_name = message.text.strip()    
+        cup_name = message.text.strip()
         reply_msg = 'Ну всё, в следующий раз на твоём стаканчике ' + \
                     'мы напишем ' + str(cup_name) + ' 😁'
         if message.from_user.id not in vars.orders:
@@ -47,4 +51,5 @@ async def set_new_name(message: Message, state: FSMContext):
 
         await message.answer(reply_msg)
         db_models.update_cup_name_in_person_table(user_id, cup_name)
-        await state.clear()
+        await state.update_data(name=cup_name)
+        await state.set_state((await state.get_data())['prev_state'])

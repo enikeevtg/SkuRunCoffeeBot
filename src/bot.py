@@ -31,7 +31,7 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.include_routers(cancel.router)
-    dp.include_routers(add_order.router, start.router, menu.router,
+    dp.include_routers(start.router, menu.router, add_order.router,
                        edit.router, name.router, table.router)
 
     await admin.send_gsheet_link(bot)
