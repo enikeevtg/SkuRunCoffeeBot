@@ -37,14 +37,16 @@
 
 ## Описание
 
-Данные пользователей сохраняются в базе данных skurun.sql с помощью библиотеки sqlite3.
+Данные пользователей сохраняются в базе данных `sqlite3`.
 
-Заказы пользователей отправляются в google sheets с помощью подключения соответстующего API.
+Заказы пользователей отправляются в google sheets с помощью подключения `Google Sheets API`.
 
 
 ## Материалы, использованные в процессе написания кода
 
-+ [Официальная документация](https://docs.aiogram.dev/en/latest/)
+### aiogram
+
++ [Официальная документация aiogram](https://docs.aiogram.dev/en/latest/)
 
 + [habr.yakvenalex](https://habr.com/ru/users/yakvenalex/)
 
@@ -75,3 +77,16 @@
     + [За границей Hello World: полный гайд по разработке Telegram ботов с помощью Python и Aiogram 3. Часть 1](https://habr.com/ru/articles/732136/)
 
     + [За границей Hello World: полный гайд по разработке Telegram ботов на Python + Aiogram 3. Часть 2: Меню и OpenAI API](https://habr.com/ru/articles/733732/)
+
+
+### Google Sheets API
+
++ [Документация Google Sheets Guides](https://developers.google.com/sheets/api/guides/concepts)
+
+    + [Read & write cell values](https://developers.google.com/sheets/api/guides/values)
+
++ [Генерируем красивую Google-таблицу из своей программы (используя Google Sheets API v4)](https://habr.com/ru/articles/305378/)
+
++ [Google Sheets API + Python. Чтение и запись с Сервисным Аккаунтом Google Cloud](https://habr.com/ru/articles/575160/)
+
++ [Видео: Работаем с Google Sheets API на Python](https://www.youtube.com/watch?v=Bf8KHZtcxnA)
