@@ -18,7 +18,8 @@ from handlers import start, menu, edit, name, cancel
 from utils import gsheets
 
 
-# Для запуска на pythonanywhere.com:
+# Для запуска на pythonanywhere.com
+# (требуется установка 'pip install aiohttp-socks'):
 # from aiogram.client.session.aiohttp import AiohttpSession
 # session = AiohttpSession(proxy="http://proxy.server:3128")
 

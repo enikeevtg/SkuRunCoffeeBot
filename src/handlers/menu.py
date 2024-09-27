@@ -105,7 +105,7 @@ async def option_chosen_incorrectly(message: Message, state: FSMContext):
 async def order_confirmation(message: Message, state: FSMContext):
     data = await state.get_data()
     await state.set_state(DrinkOrder.order_confirmation)
-    await message.answer(f'Твой заказ:\n{data['name']} — {data['drink']}',
+    await message.answer(f'Твой заказ:\n{data["name"]} — {data["drink"]}',
                          reply_markup=ReplyKeyboardRemove())
     await message.answer('Отправляю баристе?',
                          reply_markup=await confirmation_kb_builder())
