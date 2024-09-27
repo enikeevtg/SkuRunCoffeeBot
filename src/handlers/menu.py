@@ -105,7 +105,7 @@ async def option_chosen_incorrectly(message: Message, state: FSMContext):
 async def order_confirmation(message: Message, state: FSMContext):
     data = await state.get_data()
     await state.set_state(DrinkOrder.order_confirmation)
-    await message.answer(f'Твой заказ:\n{data['name']} - {data['drink']}',
+    await message.answer(f'Твой заказ:\n{data['name']} — {data['drink']}',
                          reply_markup=ReplyKeyboardRemove())
     await message.answer('Отправляю баристе?',
                          reply_markup=await confirmation_kb_builder())
@@ -116,14 +116,10 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.message.answer(messages.success_order_msg +
                                   str(data['drink'].lower()))
-
     await callback.answer('')
     await state.set_state(DrinkOrder.order_done)
     vars.orders[callback.from_user.id] = data
-
-    order_id = vars.order_id
-    vars.order_id += 1
-    gsheets.send_order_to_google_sheet(order_id, data['name'], data['drink'])
+    gsheets.send_order_to_google_sheet(data['name'], data['drink'])
 
 
 @router.callback_query(DrinkOrder.order_confirmation, F.data == 'cancel_order')

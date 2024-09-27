@@ -88,7 +88,5 @@ async def create_order(state: FSMContext):
     data = await state.get_data()
     cup_name = data.get('add_name')
     drink = data.get('drink')
-    order_id = vars.order_id
-    vars.order_id += 1
-    gsheets.send_order_to_google_sheet(order_id, cup_name, drink)
+    gsheets.send_order_to_google_sheet(cup_name, drink)
     await state.set_state(data['prev_state'])

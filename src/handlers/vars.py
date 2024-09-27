@@ -4,9 +4,6 @@ from decouple import config
 
 
 # handlers.menu
-order_id = int(config('FIRST_ORDER_ROW'))
-
-# handlers.menu
 # Временная база заказов в текущий день
 # {user_id: {
 #            'name': 'Тагир',

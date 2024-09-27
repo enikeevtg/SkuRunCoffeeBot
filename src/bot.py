@@ -15,6 +15,7 @@ import admin
 from admin import add_order, table
 from db_handler import db_models
 from handlers import start, menu, edit, name, cancel
+from utils import gsheets
 
 
 # Для запуска на pythonanywhere.com:
@@ -23,6 +24,7 @@ from handlers import start, menu, edit, name, cancel
 
 
 async def main():
+    gsheets.clear_google_sheet()
     db_models.create_person_table()
 
     bot = Bot(token=config('TOKEN'))
