@@ -28,9 +28,7 @@ async def cmd_menu(message: Message, state: FSMContext):
     data = await state.get_data()
     name: str = data['name']
     drink: str = data['drink']
-    await message.answer(f'{name}, твой заказ ({drink.lower()}) уже отправил ' +
-                         'баристе. Он будет с нетерпением ждать, когда ты ' +
-                         'вернёшься с пробежки 🤗')
+    await message.answer(messages.order_done.format(name, drink.lower()))
 
 
 @router.message(StateFilter(None), Command('menu'))
@@ -98,8 +96,8 @@ async def order_confirmation(message: Message, state: FSMContext):
 @router.callback_query(DrinkOrder.order_confirmation, F.data == 'create_order')
 async def create_order(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
-    await callback.message.answer(messages.success_order_msg +
-                                  str(data['drink'].lower()))
+    await callback.message.edit_text(text=messages.success_order_msg +
+                                     str(data['drink']).lower())
     await callback.answer('')
     await state.set_state(DrinkOrder.order_done)
     vars.orders[callback.from_user.id] = data
@@ -108,8 +106,8 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(DrinkOrder.order_confirmation, F.data == 'cancel_order')
 async def cancel_order(callback: CallbackQuery, state: FSMContext):
-    await callback.message.answer(
-                          'Давай начнём заново\n' + messages.choose_drink,
-                          reply_markup=await menu_kb_builder(vars.drink_names))
+    await callback.message.edit_text(text='Окей, давай начнём сначала! ' +
+                                     messages.commands)
+                                #, reply_markup=await confirmation_kb_builder())
     await callback.answer('')
-    await state.set_state(DrinkOrder.choosing_drink)
+    await state.clear()
