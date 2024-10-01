@@ -1,6 +1,5 @@
 import httplib2
 import apiclient
-# import apiclient.discovery
 from oauth2client.service_account import ServiceAccountCredentials
 from decouple import config
 

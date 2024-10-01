@@ -7,11 +7,26 @@ PIP = pip3
 MAIN_SCRIPT = bot.py
 REQUIREMENTS = requirements.txt
 
-DB = ./skurun.sql
+ALL_FILES = admin db_handler handlers keyboards utils \
+						.env creds.json bot.py skurun.sqlite3 \
+						requirements.txt
+BOT_PACK = bot.tar
 
 run:
-#	rm -rf $(DB)
 	$(PY) $(MAIN_SCRIPT)
+
+pack:
+	tar -cvf $(BOT_PACK) $(ALL_FILES)
+
+unpack: $(BOT_PACK)
+	tar -xvf $(BOT_PACK)
+
+install: unpack
+	$(PIP) install -r $(REQUIREMENTS)
+	rm $(BOT_PACK)
+
+uninstall:
+	rm -rf $(ALL_FILES)
 
 venv:
 	$(PY) -m venv venv

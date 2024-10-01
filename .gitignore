@@ -7,8 +7,8 @@ venv
 *.json
 *.sql
 *.sqlite3
+*.tar
 
-.env
-__token.py
 research
 reserves
+.env
