@@ -2,8 +2,10 @@ import logging
 
 
 logfile = open('log.txt', 'w')
-logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', stream=logfile)
+formatter = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
+logging.basicConfig(stream=logfile,
+                    level=logging.WARNING,
+                    format=formatter)
 logger = logging.getLogger(__name__)
 
 
