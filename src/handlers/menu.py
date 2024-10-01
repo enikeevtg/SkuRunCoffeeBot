@@ -11,9 +11,6 @@ from db_handler import db_models
 from handlers import messages, start, vars
 
 
-import logging
-
-
 router = Router()
 
 
@@ -34,7 +31,6 @@ async def cmd_menu(message: Message, state: FSMContext):
     await message.answer(f'{name}, твой заказ ({drink.lower()}) уже отправил ' +
                          'баристе. Он будет с нетерпением ждать, когда ты ' +
                          'вернёшься с пробежки 🤗')
-    logging.warning(f'{(await state.get_data())['name']}: {message.text}')
 
 
 @router.message(StateFilter(None), Command('menu'))
@@ -51,8 +47,6 @@ async def cmd_menu(message: Message, state: FSMContext):
     await state.update_data(name=cup_name)
     await state.set_state(DrinkOrder.choosing_drink)
 
-    logging.warning(f'{cup_name}')
-
 
 @router.message(DrinkOrder.choosing_drink, F.text.in_(vars.drink_names))
 async def drink_chosen(message: Message, state: FSMContext):
@@ -68,15 +62,12 @@ async def drink_chosen(message: Message, state: FSMContext):
                          reply_markup=await menu_kb_builder(options))
     await state.set_state(DrinkOrder.choosing_option)
 
-    logging.warning(f'{(await state.get_data())['name']}: {message.text}')
-
 
 @router.message(DrinkOrder.choosing_drink)
 async def drink_chosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
                          reply_markup=await menu_kb_builder(vars.drink_names))
     await state.set_state(DrinkOrder.choosing_drink)
-    logging.warning(f'{(await state.get_data())['name']}: {message.text}')
 
 
 @router.message(DrinkOrder.choosing_option,
@@ -84,7 +75,6 @@ async def drink_chosen_incorrectly(message: Message, state: FSMContext):
 async def option_chosen(message: Message, state: FSMContext):
     await state.update_data(drink=message.text)
     await order_confirmation(message, state)
-    logging.warning(f'{(await state.get_data())['name']}: {message.text}')
 
 
 @router.message(DrinkOrder.choosing_option)
@@ -94,7 +84,6 @@ async def option_chosen_incorrectly(message: Message, state: FSMContext):
     await message.answer(text=messages.try_again,
                          reply_markup=await menu_kb_builder(options))
     await state.set_state(DrinkOrder.choosing_option)
-    logging.warning(f'{(await state.get_data())['name']}: {message.text}')
 
 
 async def order_confirmation(message: Message, state: FSMContext):
@@ -115,7 +104,6 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     await state.set_state(DrinkOrder.order_done)
     vars.orders[callback.from_user.id] = data
     gsheets.send_order_to_google_sheet(data['name'], data['drink'])
-    logging.warning(f'{(await state.get_data())['name']}: {callback.message.text}')
 
 
 @router.callback_query(DrinkOrder.order_confirmation, F.data == 'cancel_order')
@@ -125,4 +113,3 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
                           reply_markup=await menu_kb_builder(vars.drink_names))
     await callback.answer('')
     await state.set_state(DrinkOrder.choosing_drink)
-    logging.warning(f'{(await state.get_data())['name']}: {callback.message.text}')

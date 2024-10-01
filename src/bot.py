@@ -1,18 +1,9 @@
-import logging
-
-
-logfile = open('log.txt', 'w')
-formatter = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
-logging.basicConfig(stream=logfile,
-                    level=logging.WARNING,
-                    format=formatter)
-logger = logging.getLogger(__name__)
-
-
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
+# import logging
+
 import admin
 from admin import add_order, table
 from db_handler import db_models
@@ -46,4 +37,9 @@ async def main():
 
 
 if __name__ == '__main__':
+    # logfile = open('log.txt', 'w')
+    # format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
+    # logging.basicConfig(stream=logfile, level=logging.INFO, format=format)
+    # logger = logging.getLogger(__name__)
+
     asyncio.run(main())
