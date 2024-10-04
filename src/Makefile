@@ -1,9 +1,10 @@
 .PHONY: venv
 
+# UTILS
 PY = python3
 PIP = pip3
 
-# MAIN_SCRIPT = main.py
+# FILENAMES
 MAIN_SCRIPT = bot.py
 REQUIREMENTS = requirements.txt
 
@@ -12,10 +13,14 @@ ALL_FILES = admin db_handler handlers keyboards utils \
 						requirements.txt
 BOT_PACK = bot.tar
 
+
+# MAIN TARGET
 run:
 	$(PY) $(MAIN_SCRIPT)
 
+# DEPLOYMENT
 pack:
+	rm -rf $(BOT_PACK)
 	tar -cvf $(BOT_PACK) $(ALL_FILES)
 
 unpack: $(BOT_PACK)
@@ -28,10 +33,11 @@ install: unpack
 uninstall:
 	rm -rf $(ALL_FILES)
 
+# SERVICE
 venv:
 	$(PY) -m venv venv
 
-freeze_deps: $(REQUIREMENTS)
+freeze_deps:
 	$(PIP) freeze > $^
 
 install_deps: $(REQUIREMENTS)
