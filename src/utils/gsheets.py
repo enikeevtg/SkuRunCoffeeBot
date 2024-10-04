@@ -33,7 +33,7 @@ def send_order_to_google_sheet(name, drink):
         )
         .execute()
     )
-    print(f"{(result.get('updates').get('updatedCells'))} cells appended.") 
+    # print(f"{(result.get('updates').get('updatedCells'))} cells appended.") 
 
 
 def clear_google_sheet():
@@ -58,7 +58,7 @@ def clear_google_sheet():
         )
         .execute()
     )
-    print(f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    # print(f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 # def send_order_to_google_sheet(row_id, name, drink):
