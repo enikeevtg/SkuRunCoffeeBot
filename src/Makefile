@@ -38,7 +38,7 @@ venv:
 	$(PY) -m venv venv
 
 freeze_deps:
-	$(PIP) freeze > $^
+	$(PIP) freeze > $(REQUIREMENTS)
 
 install_deps: $(REQUIREMENTS)
 	$(PIP) install -r $^
