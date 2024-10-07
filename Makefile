@@ -1,41 +1,39 @@
-.PHONY: venv
-
 # UTILS
 PY = python3
 PIP = pip3
 
 # FILENAMES
-MAIN_SCRIPT = bot.py
+VENV = .venv
+APP = app
+MAIN_SCRIPT = $(APP)/bot.py
+ANYWHERE_MAIN_SCRIPT = $(APP)/bot_pythonanywhere.py
+RUNNER = runner.sh
 REQUIREMENTS = requirements.txt
-
-ALL_FILES = admin db_handler handlers keyboards utils \
-						.env creds.json bot.py skurun.sqlite3 \
-						requirements.txt
-BOT_PACK = bot.tar
+APP_PACK = app.tar
 
 
 # MAIN TARGET
 run:
 	$(PY) $(MAIN_SCRIPT)
 
+pythonanywhere_run:
+	$(PY) $(ANYWHERE_MAIN_SCRIPT)
+
 # DEPLOYMENT
 pack:
-	rm -rf $(BOT_PACK)
-	tar -cvf $(BOT_PACK) $(ALL_FILES)
+	rm -rf $(APP_PACK)
+	tar -cf $(APP_PACK) $(APP) $(RUNNER) $(REQUIREMENTS)
 
-unpack: $(BOT_PACK)
-	tar -xvf $(BOT_PACK)
+unpack: $(APP_PACK)
+	tar -xvf $(APP_PACK)
 
-install: unpack
+install: venv unpack
 	$(PIP) install -r $(REQUIREMENTS)
-	rm $(BOT_PACK)
-
-uninstall:
-	rm -rf $(ALL_FILES)
+	rm $(APP_PACK)
 
 # SERVICE
 venv:
-	$(PY) -m venv venv
+	$(PY) -m venv $(VENV)
 
 freeze_deps:
 	$(PIP) freeze > $(REQUIREMENTS)
