@@ -31,7 +31,7 @@ async def cmd_menu(message: Message, state: FSMContext):
     await message.answer(messages.order_done.format(name, drink.lower()))
 
 
-@router.message(StateFilter(None), Command('menu'))
+@router.message(Command('menu'), StateFilter(None))
 async def cmd_menu(message: Message, state: FSMContext):
 
     # Временная проверка наличия пользователя в базе данных

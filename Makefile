@@ -7,7 +7,6 @@ VENV = .venv
 APP = app
 MAIN_SCRIPT = $(APP)/bot.py
 ANYWHERE_MAIN_SCRIPT = $(APP)/bot_pythonanywhere.py
-RUNNER = runner.sh
 REQUIREMENTS = requirements.txt
 APP_PACK = app.tar
 
@@ -22,7 +21,7 @@ pythonanywhere_run:
 # DEPLOYMENT
 pack:
 	rm -rf $(APP_PACK)
-	tar -cf $(APP_PACK) $(APP) $(RUNNER) $(REQUIREMENTS)
+	tar -cf $(APP_PACK) $(APP) $(REQUIREMENTS)
 
 unpack: $(APP_PACK)
 	tar -xvf $(APP_PACK)
@@ -43,11 +42,11 @@ install_deps: $(REQUIREMENTS)
 
 clean:
 	rm -rf __pycache__
-	rm -rf ../__pycache__
-	rm -rf ../research/__pycache__
-	rm -rf ../reserves/__pycache__
-	rm -rf ./admin/__pycache__
-	rm -rf ./db_handler/__pycache__
-	rm -rf ./handlers/__pycache__
-	rm -rf ./keyboards/__pycache__
-	rm -rf ./utils/__pycache__
+	rm -rf $(APP)/__pycache__
+	rm -rf research/__pycache__
+	rm -rf reserves/__pycache__
+	rm -rf $(APP)/admin/__pycache__
+	rm -rf $(APP)/db_handler/__pycache__
+	rm -rf $(APP)/handlers/__pycache__
+	rm -rf $(APP)/keyboards/__pycache__
+	rm -rf $(APP)/utils/__pycache__

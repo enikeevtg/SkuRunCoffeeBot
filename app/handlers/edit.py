@@ -17,9 +17,6 @@ class Edition(StatesGroup):
     set_new_name = State()
 
 
-
-
-
 @router.message(Command('edit'))
 async def cmd_edit(message: Message, state: FSMContext):
     # Временная проверка наличия пользователя в базе данных

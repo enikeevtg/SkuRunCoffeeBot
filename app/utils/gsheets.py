@@ -1,13 +1,16 @@
-import httplib2
 import apiclient
-from oauth2client.service_account import ServiceAccountCredentials
 from decouple import config
+import httplib2
+from oauth2client.service_account import ServiceAccountCredentials
+# import logging
 
+
+# logger = logging.getLogger(__name__)
 
 # Файл, полученный в Google Developer Console
-# CREDENTIALS_FILE = '../creds.json'
+# CREDENTIALS_FILE = './app/creds.json'
 # ID Google Sheets документа (можно взять из его URL)
-# spreadsheet_id = '1ws8V_vXUXl2qqzcVH6xsT7ny7e8tsbTFXRRcVl8MKZU'
+# spreadsheet_id = ''
 
 # Авторизуемся и получаем service — экземпляр доступа к API
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -33,7 +36,8 @@ def send_order_to_google_sheet(name, drink):
         )
         .execute()
     )
-    # print(f"{(result.get('updates').get('updatedCells'))} cells appended.") 
+    # logger.debug(
+    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 def clear_google_sheet():
@@ -58,7 +62,8 @@ def clear_google_sheet():
         )
         .execute()
     )
-    # print(f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    # logger.debug(
+    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 # def send_order_to_google_sheet(row_id, name, drink):

@@ -11,19 +11,11 @@ from handlers import start, menu, edit, name, cancel
 from utils import gsheets
 
 
-# Для запуска на pythonanywhere.com
-# (требуется установка 'pip install aiohttp-socks'):
-# from aiogram.client.session.aiohttp import AiohttpSession
-# session = AiohttpSession(proxy="http://proxy.server:3128")
-
-
 async def main():
     gsheets.clear_google_sheet()
     db_models.create_person_table()
 
     bot = Bot(token=config('TOKEN'))
-    # Для запуска на pythonanywhere.com:
-    # bot = Bot(token=config('TOKEN'), session=session)
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.include_routers(cancel.router)
@@ -41,5 +33,4 @@ if __name__ == '__main__':
     # format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
     # logging.basicConfig(stream=logfile, level=logging.INFO, format=format)
     # logger = logging.getLogger(__name__)
-
     asyncio.run(main())
