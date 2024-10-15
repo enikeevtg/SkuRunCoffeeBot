@@ -1,7 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
-from datetime import datetime
 from decouple import config
 # import logging
 
@@ -38,9 +37,4 @@ if __name__ == '__main__':
     # format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
     # logging.basicConfig(stream=logfile, level=logging.DEBUG, format=format)
     # logger = logging.getLogger(__name__)
-    weekday = datetime.today().strftime('%a')
-    if weekday == 'Sat':
-        print('SkuRunCoffeeBreakBot start...')
-        asyncio.run(main())
-    else:
-        print(f'Today is {weekday}')
+    asyncio.run(main())

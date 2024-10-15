@@ -9,6 +9,7 @@ MAIN_SCRIPT = $(APP)/bot.py
 ANYWHERE_MAIN_SCRIPT = $(APP)/bot_pythonanywhere.py
 REQUIREMENTS = requirements.txt
 APP_PACK = app.tar
+WEEKDAY = Sat
 
 
 # MAIN TARGET
@@ -16,7 +17,14 @@ run:
 	$(PY) $(MAIN_SCRIPT)
 
 pythonanywhere_run:
-	$(PY) $(ANYWHERE_MAIN_SCRIPT)
+	@echo $(shell date)
+	@if [ $(shell date +%a) = $(WEEKDAY) ]; \
+	then \
+		echo "SkuRunCoffeeBreakBot launching..."; \
+		$(PY) $(ANYWHERE_MAIN_SCRIPT); \
+	else \
+		echo "SkuRunCoffeeBreakBot not launched."; \
+	fi;
 
 # DEPLOYMENT
 pack:
