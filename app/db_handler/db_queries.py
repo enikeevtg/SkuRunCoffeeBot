@@ -1,6 +1,5 @@
 # Набор запросов в БД SQLite3
 
-
 q_create_person_table = \
   'CREATE TABLE IF NOT EXISTS person ( \
       id INTEGER PRIMARY KEY, \

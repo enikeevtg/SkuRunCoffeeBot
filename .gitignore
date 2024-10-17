@@ -1,12 +1,14 @@
 __pycache__
-venv
+.venv
 .DS_Store
 
 *.txt
 *.log
 *.json
 *.sql
+*.sqlite3
+*.tar
 
-__token.py
 research
 reserves
+.env
