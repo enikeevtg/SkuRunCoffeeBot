@@ -1,4 +1,4 @@
-# SkuRunCoffeeBot_v2
+# SkuRunCoffeeBot_v3
 
 ![photo](./img/IMG_7981.JPG)
 
@@ -37,7 +37,7 @@
 
 ## Описание
 
-Данные пользователей сохраняются в базе данных `sqlite3`.
+Данные пользователей сохраняются в базе данных `PostgreSQL`. Запросы написаны посредоством `SQLAlchemy`.
 
 Заказы пользователей отправляются в google sheets с помощью подключения `Google Sheets API`.
 
@@ -77,6 +77,8 @@
     + [За границей Hello World: полный гайд по разработке Telegram ботов с помощью Python и Aiogram 3. Часть 1](https://habr.com/ru/articles/732136/)
 
     + [За границей Hello World: полный гайд по разработке Telegram ботов на Python + Aiogram 3. Часть 2: Меню и OpenAI API](https://habr.com/ru/articles/733732/)
+
++ YouTube-channel `sudo teach`
 
 
 ### Google Sheets API

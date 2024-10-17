@@ -4,11 +4,11 @@ from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message
+
 from admin import admins_list
 from utils import gsheets
-from keyboards import menu_kb_builder, table_kb_builder
-from handlers import messages, vars
+from keyboards import table_kb_builder
 
 
 router = Router()

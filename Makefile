@@ -54,7 +54,7 @@ clean:
 	rm -rf research/__pycache__
 	rm -rf reserves/__pycache__
 	rm -rf $(APP)/admin/__pycache__
-	rm -rf $(APP)/db_handler/__pycache__
+	rm -rf $(APP)/database/__pycache__
 	rm -rf $(APP)/handlers/__pycache__
 	rm -rf $(APP)/keyboards/__pycache__
 	rm -rf $(APP)/utils/__pycache__

@@ -1,14 +1,13 @@
-# Обработка заказа напитка
-
 from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 from utils import gsheets
-from keyboards import menu_kb_builder, confirmation_kb_builder
-from db_handler import db_models
+
+from database import requests as rq
 from handlers import messages, start, vars
+from keyboards import menu_kb_builder, confirmation_kb_builder
 
 
 router = Router()
@@ -35,7 +34,7 @@ async def cmd_menu(message: Message, state: FSMContext):
 async def cmd_menu(message: Message, state: FSMContext):
 
     # Временная проверка наличия пользователя в базе данных
-    cup_name = db_models.get_cup_name_from_person_table(message.from_user.id)
+    cup_name = await rq.get_user_cup_name(message.from_user.id)
     if cup_name == None:
         await start.cmd_start(message, state)
         return

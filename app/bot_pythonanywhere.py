@@ -6,8 +6,8 @@ from decouple import config
 
 import admin
 from admin import add_order, table
-from db_handler import db_models
-from handlers import start, menu, edit, name, cancel
+from database.models import db_main
+from handlers import cancel, start, name, menu, edit, not_text_handler 
 from utils import gsheets
 
 
@@ -17,17 +17,14 @@ session = AiohttpSession(proxy="http://proxy.server:3128")
 
 async def main():
     gsheets.clear_google_sheet()
-    db_models.create_person_table()
-
+    await db_main()
     bot = Bot(token=config('TOKEN'), session=session)
     dp = Dispatcher(storage=MemoryStorage())
-
-    dp.include_routers(cancel.router)
+    dp.include_router(cancel.router)
     dp.include_routers(start.router, menu.router, add_order.router,
-                       edit.router, name.router, table.router)
-
+                       edit.router, name.router, table.router,
+                       not_text_handler.router)
     await admin.send_gsheet_link(bot)
-
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 
