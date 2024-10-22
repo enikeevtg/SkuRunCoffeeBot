@@ -2,10 +2,11 @@ import apiclient
 from decouple import config
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
-# import logging
+import logging
 
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
 
 # Файл, полученный в Google Developer Console
 # CREDENTIALS_FILE = './app/creds.json'
@@ -36,8 +37,8 @@ def send_order_to_google_sheet(name, drink):
         )
         .execute()
     )
-    # logger.debug(
-    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    logger.info(
+        f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 def clear_google_sheet():
@@ -62,8 +63,8 @@ def clear_google_sheet():
         )
         .execute()
     )
-    # logger.debug(
-    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    logger.info(
+        f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 # def send_order_to_google_sheet(row_id, name, drink):

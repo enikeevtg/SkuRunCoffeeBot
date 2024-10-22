@@ -6,7 +6,8 @@ from database.models import User
 
 async def set_user(from_user, cup_name: str) -> None:
     async with async_session() as session:
-        user = await session.scalar(select(User).where(User.tg_id == from_user.id))
+        user = await session.scalar(select(User)
+                                    .where(User.tg_id == from_user.id))
 
         if not user:
             session.add(User(
@@ -21,7 +22,8 @@ async def set_user(from_user, cup_name: str) -> None:
 
 async def get_user_cup_name(tg_id: int) -> str | None:
     async with async_session() as session:
-        user = await session.scalar(select(User).where(User.tg_id == tg_id))
+        user = await session.scalar(select(User)
+                                    .where(User.tg_id == tg_id))
         return user.cup_name if user else None
 
 
