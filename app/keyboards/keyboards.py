@@ -4,19 +4,39 @@ from aiogram.types import (KeyboardButton, ReplyKeyboardMarkup,
                            InlineKeyboardButton, InlineKeyboardMarkup)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from decouple import config
+import logging
 
 from database.requests import get_categoties, get_category_items
+from admin import admins_list
 
 
-async def menu_kb_builder() -> ReplyKeyboardMarkup:
-    pass
+logger = logging.getLogger(__name__)
 
 
-async def table_kb_builder() -> InlineKeyboardMarkup:
-    table_url = 'https://docs.google.com/spreadsheets/d/' +\
+def main_kb_builder(tg_id: int) -> ReplyKeyboardMarkup:
+    menu_btn = KeyboardButton(text='Выбрать напиток')
+    profile_btn = KeyboardButton(text='Профиль')
+    btns_list = [[menu_btn], [profile_btn]]
+
+    # добавка для админской клавиатуры
+    if tg_id in admins_list:
+        logger.info(f'[{admins_list=}, {tg_id=}')
+        btns_list.append([KeyboardButton(text='Я админ')])
+    
+    return ReplyKeyboardMarkup(keyboard=btns_list,
+                               resize_keyboard=True)
+
+
+async def admin_kb_builder() -> InlineKeyboardMarkup:
+    add_order_btn = InlineKeyboardButton(
+                            text='Добавить напиток бегуна без телеги',
+                            callback_data='add_order')
+    table_url = 'https://docs.google.com/spreadsheets/d/' + \
                 config('SPREADSHEET_ID') + '/edit'
-    open_table_btn = InlineKeyboardButton(text='Открыть таблицу', url=table_url)
-    return InlineKeyboardMarkup(inline_keyboard=[[open_table_btn]])
+    open_table_btn = InlineKeyboardButton(text='Открыть таблицу заказов',
+                                          url=table_url)
+    return InlineKeyboardMarkup(inline_keyboard=[[add_order_btn],
+                                                 [open_table_btn]])
 
 
 async def categories_kb_builder() -> InlineKeyboardMarkup:

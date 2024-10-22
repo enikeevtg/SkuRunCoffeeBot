@@ -10,7 +10,7 @@ import logging
 from admin import admins_list
 from handlers.menu import DrinkOrder
 from utils import gsheets
-from keyboards import table_kb_builder
+from keyboards import admin_kb_builder
 
 
 router = Router()
@@ -51,7 +51,7 @@ async def admin_create_order(message: Message, state: FSMContext):
                 f'{message.text}]')
 
     await message.answer('Записал. Можешь проверить в таблице',
-                         reply_markup=await table_kb_builder())
+                         reply_markup=await admin_kb_builder())
     data = await state.get_data()
     cup_name = data.get('cup_name')
     drink = message.text

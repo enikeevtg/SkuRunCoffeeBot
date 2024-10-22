@@ -1,8 +1,8 @@
 from aiogram import Router, F
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
+from aiogram.types import Message, CallbackQuery
 import logging
 
 from handlers import drinks
@@ -23,7 +23,7 @@ class DrinkOrder(StatesGroup):
     order_done = State()
 
 
-@router.message(Command('menu'), StateFilter(None))
+@router.message(F.text == 'Выбрать напиток', StateFilter(None))
 async def cmd_menu(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')
@@ -40,7 +40,7 @@ async def cmd_menu(message: Message, state: FSMContext):
     await state.set_state(DrinkOrder.order_in_process) 
 
 
-@router.message(Command('menu'), StateFilter(DrinkOrder.order_done))
+@router.message(F.text == 'Выбрать напиток', StateFilter(DrinkOrder.order_done))
 async def cmd_menu(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')
@@ -95,7 +95,6 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
-    await callback.message.edit_text(text='Окей, давай начнём сначала! ' +
-                                     messages.commands)
     await callback.answer('')
+    await callback.message.edit_text(text='Нихочешь - как хочешь 😛')
     await state.clear()

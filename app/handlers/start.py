@@ -9,6 +9,7 @@ import logging
 
 from database import requests as rq
 from handlers import messages
+from keyboards import main_kb_builder
 
 
 router = Router()
@@ -27,12 +28,13 @@ async def cmd_start(message: Message, state: FSMContext):
                  f'{message.text}]')
 
     user = await rq.get_user_cup_name(message.from_user.id)
-    if user:
-        await message.answer(f'{user}, мы с тобой уже знакомы 😄\n\n' +
-                             messages.commands)
-    else:
+    if not user:
         await message.answer(messages.register_request)
         await state.set_state(Registration.set_name)
+        return
+
+    await message.answer(f'Поехали!',
+                         reply_markup=main_kb_builder(message.from_user.id))
 
 
 @router.message(F.content_type == ContentType.TEXT,
@@ -45,6 +47,6 @@ async def set_name(message: Message, state: FSMContext):
         await message.answer(messages.incorrect_name)
     else:
         await rq.set_user(message.from_user, message.text.strip())
-        await message.answer(f'{message.text.strip()}, я тебя запомнил 😄\n\n' +
-                             messages.commands)
+        await message.answer(f'Поехали!',
+                             reply_markup=main_kb_builder(message.from_user.id))
         await state.clear()
