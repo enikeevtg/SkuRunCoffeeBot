@@ -8,7 +8,8 @@ import logging
 from handlers import drinks
 from database import requests as rq
 from handlers import messages, start
-from keyboards import menu_kb_builder, confirmation_kb_builder
+from keyboards import (categories_kb_builder, items_kb_builder,
+                       confirmation_kb_builder)
 from utils import gsheets
 
 
@@ -18,17 +19,14 @@ logger = logging.getLogger(__name__)
 
 # FSM states
 class DrinkOrder(StatesGroup):
-    choosing_drink = State()
-    choosing_option = State()
-    order_confirmation = State()
+    order_in_process = State()
     order_done = State()
 
 
-@router.message(Command('menu'),
-                StateFilter(None))
+@router.message(Command('menu'), StateFilter(None))
 async def cmd_menu(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
+                f'{message.text}]')
 
     # Временная проверка наличия пользователя в базе данных
     cup_name = await rq.get_user_cup_name(message.from_user.id)
@@ -37,16 +35,15 @@ async def cmd_menu(message: Message, state: FSMContext):
         return
 
     await message.answer(text=messages.choose_drink, 
-                         reply_markup=await menu_kb_builder(drinks.drink_names))
+                         reply_markup=await categories_kb_builder())
     await state.update_data(name=cup_name)
-    await state.set_state(DrinkOrder.choosing_drink)
+    await state.set_state(DrinkOrder.order_in_process) 
 
 
-@router.message(Command('menu'),
-                StateFilter(DrinkOrder.order_done))
+@router.message(Command('menu'), StateFilter(DrinkOrder.order_done))
 async def cmd_menu(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
+                f'{message.text}]')
 
     data = await state.get_data()
     name: str = data['name']
@@ -54,70 +51,36 @@ async def cmd_menu(message: Message, state: FSMContext):
     await message.answer(messages.order_done.format(name, drink.lower()))
 
 
-@router.message(DrinkOrder.choosing_drink, F.text.in_(drinks.drink_names))
-async def drink_chosen(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
-    
-    drink = message.text
+@router.callback_query(F.data.startswith('category_'))
+async def drink_items_by_category(callback: CallbackQuery) -> None:
+    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
+                f'{callback.data}]')
+
+    await callback.answer()
+    category_id = callback.data.split('_')[1]
+    await callback.message.edit_text(text=messages.choose_option,
+                              reply_markup=await items_kb_builder(category_id))
+
+
+@router.callback_query(F.data.startswith('item_'))
+async def order_confirmation(callback: CallbackQuery,
+                             state: FSMContext) -> None:
+    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
+                f'{callback.data}]')
+
+    item = await rq.get_item_by_id(callback.data.split('_')[1])
+    drink = item.name
     await state.update_data(drink=drink)
-
-    if drink == 'Фильтр-кофе':
-        await option_chosen(message, state)
-        return
-
-    options = drinks.drink_options[drink]
-    await message.answer(text=messages.choose_option,
-                         reply_markup=await menu_kb_builder(options))
-    await state.set_state(DrinkOrder.choosing_option)
-
-
-@router.message(DrinkOrder.choosing_drink)
-async def drink_chosen_incorrectly(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
-    
-    await message.answer(text=messages.try_again,
-                         reply_markup=await menu_kb_builder(drinks.drink_names))
-    await state.set_state(DrinkOrder.choosing_drink)
-
-
-@router.message(DrinkOrder.choosing_option,
-                F.text.in_(drinks.americano_options + drinks.rosehip_options))
-async def option_chosen(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
-    
-    await state.update_data(drink=message.text)
-    await order_confirmation(message, state)
-
-
-@router.message(DrinkOrder.choosing_option)
-async def option_chosen_incorrectly(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
-    
-    drink = (await state.get_data())['drink']
-    options = drinks.drink_options[drink]
-    await message.answer(text=messages.try_again,
-                         reply_markup=await menu_kb_builder(options))
-    await state.set_state(DrinkOrder.choosing_option)
-
-
-async def order_confirmation(message: Message, state: FSMContext):
     data = await state.get_data()
-    await state.set_state(DrinkOrder.order_confirmation)
-    await message.answer(f'Твой заказ:\n{data["name"]} — {data["drink"]}',
-                         reply_markup=ReplyKeyboardRemove())
-    await message.answer('Отправляю баристе?',
-                         reply_markup=await confirmation_kb_builder())
+    await callback.message.edit_text(
+        f'Твой заказ:\n{data["name"]} — {data["drink"]}\nВсё верно?',
+        reply_markup=await confirmation_kb_builder())
 
 
-@router.callback_query(DrinkOrder.order_confirmation, F.data == 'create_order')
+@router.callback_query(F.data == 'confirm', DrinkOrder.order_in_process)
 async def create_order(callback: CallbackQuery, state: FSMContext):
-    logger.info(f'[{callback.message.from_user.id}, ' + \
-                f'{callback.message.from_user.username}: ' + \
-                f'{callback.message.text}]')
+    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
+                f'{callback.data}]')
 
     data = await state.get_data()
     await callback.message.edit_text(text=messages.success_order_msg +
@@ -127,14 +90,12 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     gsheets.send_order_to_google_sheet(data['name'], data['drink'])
 
 
-@router.callback_query(DrinkOrder.order_confirmation, F.data == 'cancel_order')
+@router.callback_query(F.data == 'reject', DrinkOrder.order_in_process)
 async def cancel_order(callback: CallbackQuery, state: FSMContext):
-    logger.info(f'[{callback.message.from_user.id}, ' + \
-                f'{callback.message.from_user.username}: ' + \
-                f'{callback.message.text}]')
+    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
+                f'{callback.data}]')
 
     await callback.message.edit_text(text='Окей, давай начнём сначала! ' +
                                      messages.commands)
-                                #, reply_markup=await confirmation_kb_builder())
     await callback.answer('')
     await state.clear()
