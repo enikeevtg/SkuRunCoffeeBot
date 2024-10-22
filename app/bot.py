@@ -7,7 +7,7 @@ import logging
 import admin
 from admin import add_order
 from database.models import db_main
-from handlers import cancel, start, name, menu, edit, not_text_handler 
+from handlers import start, name, menu, edit, not_text_handler 
 from utils import gsheets
 
 
@@ -16,7 +16,7 @@ async def main():
     await db_main()
     bot = Bot(token=config('TOKEN'))
     dp = Dispatcher(storage=MemoryStorage())
-    dp.include_routers(cancel.router, not_text_handler.router, start.router, 
+    dp.include_routers(not_text_handler.router, start.router, 
                        menu.router, add_order.router, edit.router, name.router)
     await admin.send_gsheet_link(bot)
     await bot.delete_webhook(drop_pending_updates=True)
