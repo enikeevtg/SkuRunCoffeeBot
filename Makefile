@@ -23,11 +23,11 @@ pythonanywhere_run:
 		echo "SkuRunCoffeeBreakBot launching..."; \
 		$(PY) $(ANYWHERE_MAIN_SCRIPT); \
 	else \
-		echo "SkuRunCoffeeBreakBot not launched."; \
+		echo "SkuRunCoffeeBreakBot not launched"; \
 	fi;
 
 # DEPLOYMENT
-pack:
+pack: clean
 	rm -rf $(APP_PACK)
 	tar -cf $(APP_PACK) $(APP) $(REQUIREMENTS)
 
