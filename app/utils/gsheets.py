@@ -2,10 +2,11 @@ import apiclient
 from decouple import config
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
-# import logging
+import logging
 
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
 
 # Файл, полученный в Google Developer Console
 # CREDENTIALS_FILE = './app/creds.json'
@@ -19,9 +20,10 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
      'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
 service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
+table_url = 'https://docs.google.com/spreadsheets/d/' + \
+            config('SPREADSHEET_ID') + '/edit'
 
-
-def send_order_to_google_sheet(name, drink):
+def send_order_to_google_sheet(nickname, drink):
     result = (
         service.spreadsheets()
         .values()
@@ -31,13 +33,13 @@ def send_order_to_google_sheet(name, drink):
             valueInputOption="USER_ENTERED",
             body={
                 "majorDimension": "ROWS",
-                "values": [[name, drink]]
+                "values": [[nickname, drink]]
             }
         )
         .execute()
     )
-    # logger.debug(
-    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    logger.info(
+        f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 def clear_google_sheet():
@@ -62,8 +64,8 @@ def clear_google_sheet():
         )
         .execute()
     )
-    # logger.debug(
-    #     f"{(result.get('updates').get('updatedCells'))} cells appended.")
+    logger.info(
+        f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
 # def send_order_to_google_sheet(row_id, name, drink):

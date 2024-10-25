@@ -1,52 +1,50 @@
-# Регистрация бегуна при первом входе в бота
-
-from aiogram import Router
+from aiogram import F, Router
 from aiogram.filters import CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
-from db_handler import db_models
+from aiogram.types import ContentType, Message
+import logging
+
+from admin import admins_list
+from database import requests as rq
 from handlers import messages
+from keyboards import main_kb, admins_main_kb
 
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 # FSM states
 class Registration(StatesGroup):
-    set_name = State()
+    set_nickname = State()
 
 
-@router.message(StateFilter(None), CommandStart())
+@router.message(CommandStart(),
+                StateFilter(None))
 async def cmd_start(message: Message, state: FSMContext):
-    user = db_models.get_cup_name_from_person_table(message.from_user.id)
-    if user:
-        await message.answer(f'О, а я тебя знаю! Ты - {user} 😄\n\n' +
-                             messages.commands)
-    else:
+    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
+                 f'{message.text}]')
+
+    user_cup_name = await rq.get_nickname(message.from_user.id)
+    if not user_cup_name:
         await message.answer(messages.register_request)
-        await state.set_state(Registration.set_name)
+        await state.set_state(Registration.set_nickname)
+
+    await message.answer(f'Поехали! 🚀',
+                         reply_markup=admins_main_kb
+                                      if message.from_user.id in admins_list
+                                      else main_kb)
 
 
-@router.message(Registration.set_name)
-async def set_name(message: Message, state: FSMContext):
-    if message.content_type != "text":
-        await message.answer(messages.incorrect_message_type)
-    elif message.text.replace(' ', '').isalpha() is False:
-        await message.answer(messages.incorrect_name)
+@router.message(F.content_type == ContentType.TEXT,
+                Registration.set_nickname)
+async def set_nickname(message: Message, state: FSMContext):
+    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
+                 f'{message.text}]')
+
+    if message.text.replace(' ', '').isalpha() is False:
+        await message.answer(messages.incorrect_nickname)
     else:
-        user_data = get_user_data_from_message(message)
-        user = db_models.Person(*user_data)
-        await message.answer(f'{user_data[4]}, я тебя запомнил 😄\n\n' +
-                             messages.commands)
-        db_models.insert_user_to_person_table(user)
+        await rq.set_user(message.from_user, message.text.strip())
         await state.clear()
-
-
-def get_user_data_from_message(message: Message):
-    user_id = message.from_user.id             # 0
-    username = message.from_user.username      # 1
-    first_name = message.from_user.first_name  # 2
-    last_name = message.from_user.last_name    # 3
-    cup_name = message.text.strip()            # 4
-    return (user_id, username, first_name, last_name, cup_name)

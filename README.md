@@ -1,4 +1,4 @@
-# SkuRunCoffeeBot_v2
+# SkuRunCoffeeBot_v3
 
 ![photo](./img/IMG_7981.JPG)
 
@@ -9,18 +9,10 @@
 
 ## Команды
 
-+ Работы с кодом ведётся из папки ./src/
-
-      cd src
-
 + Подключение виртуальной среды для разработки
 
       make venv
       source venv/bin/activate
-
-+ Запуск телеграм-бота:
-
-      make run
 
 + Загрузка необходимых для работы бота модулей:
 
@@ -30,6 +22,22 @@
 
       make freeze_deps
 
++ Запуск телеграм-бота:
+
+      make run
+
++ Запуск телеграм-бота на pythonanywhere.com:
+
+      make pythonanywhere_run
+
++ Сборка бота в tar-архив (Makefile и файл БД не архивируются):
+
+      make pack
+
++ Распаковка tar-архива с ботом:
+
+      make unpack
+
 + Очистка проекта от файлов кеширования
 
       make clean
@@ -37,7 +45,7 @@
 
 ## Описание
 
-Данные пользователей сохраняются в базе данных `sqlite3`.
+Данные пользователей сохраняются в файле базы данных `sqlite3`. Запросы написаны с помощью модуля `SQLAlchemy` и выполняются асинхронно.
 
 Заказы пользователей отправляются в google sheets с помощью подключения `Google Sheets API`.
 
@@ -77,6 +85,8 @@
     + [За границей Hello World: полный гайд по разработке Telegram ботов с помощью Python и Aiogram 3. Часть 1](https://habr.com/ru/articles/732136/)
 
     + [За границей Hello World: полный гайд по разработке Telegram ботов на Python + Aiogram 3. Часть 2: Меню и OpenAI API](https://habr.com/ru/articles/733732/)
+
++ YouTube-channel `sudo teach`
 
 
 ### Google Sheets API
