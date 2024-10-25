@@ -1,16 +1,15 @@
 # Добавление заказа вручную админом
 
 from aiogram import Router, F
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message
+from aiogram.types import CallbackQuery, Message
 import logging
 
-from admin import admins_list
-from handlers.menu import DrinkOrder
+from handlers.drink_order import DrinkOrder
 from utils import gsheets
-from keyboards import admin_kb_builder
+from keyboards import add_order_btn_cb, admins_kb
 
 
 router = Router()
@@ -18,30 +17,42 @@ logger = logging.getLogger(__name__)
 
 
 class AdminDrinkOrder(StatesGroup):
-    set_name = State()
+    set_nickname = State()
     set_drink = State()
     order_done = State()
 
 
-@router.message(Command('add_order'),
-                F.from_user.id.in_(admins_list),
-                StateFilter(None, DrinkOrder.order_done))
-async def cmd_add_order(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.text}]')
+@router.callback_query(F.data == add_order_btn_cb,
+                       StateFilter(None, DrinkOrder.order_done))
+async def add_order(callback: CallbackQuery, state: FSMContext):
+    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
+                f'{callback.data}]')
 
-    await message.answer('Введи имя')
+    await callback.answer('')
+    await callback.message.answer('Введи имя')
     await state.update_data(prev_state=await state.get_state())
-    await state.set_state(AdminDrinkOrder.set_name)
+    await state.set_state(AdminDrinkOrder.set_nickname)
 
 
-@router.message(StateFilter(AdminDrinkOrder.set_name))
+# @router.message(Command('add_order'),
+#                 F.from_user.id.in_(admins_list),
+#                 StateFilter(None, DrinkOrder.order_done))
+# async def cmd_add_order(message: Message, state: FSMContext):
+#     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
+#                 f'{message.text}]')
+
+#     await message.answer('Введи имя')
+#     await state.update_data(prev_state=await state.get_state())
+#     await state.set_state(AdminDrinkOrder.set_name)
+
+
+@router.message(StateFilter(AdminDrinkOrder.set_nickname))
 async def add_drink(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')
 
     await message.answer(text='Введи название напитка')
-    await state.update_data(cup_name=message.text)
+    await state.update_data(nickname=message.text)
     await state.set_state(AdminDrinkOrder.set_drink)
 
 
@@ -50,10 +61,10 @@ async def admin_create_order(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')
 
-    await message.answer('Записал. Можешь проверить в таблице',
-                         reply_markup=await admin_kb_builder())
+    await message.answer('Записал ✅',
+                         reply_markup=admins_kb)
     data = await state.get_data()
-    cup_name = data.get('cup_name')
+    nickname = data.get('nickname')
     drink = message.text
-    gsheets.send_order_to_google_sheet(cup_name, drink)
+    gsheets.send_order_to_google_sheet(nickname, drink)
     await state.set_state(data['prev_state'])

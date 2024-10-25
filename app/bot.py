@@ -4,10 +4,9 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
 import logging
 
-import admin
-from admin import add_order
+from admin import add_order, admins_main
+from handlers import bio, drink_order, not_text_handler, start 
 from database.models import db_main
-from handlers import start, name, menu, edit, not_text_handler 
 from utils import gsheets
 
 
@@ -16,9 +15,10 @@ async def main():
     await db_main()
     bot = Bot(token=config('TOKEN'))
     dp = Dispatcher(storage=MemoryStorage())
-    dp.include_routers(not_text_handler.router, start.router, 
-                       menu.router, add_order.router, edit.router, name.router)
-    await admin.send_gsheet_link(bot)
+    dp.include_routers(not_text_handler.router, start.router,
+                       admins_main.router, add_order.router,
+                       drink_order.router, bio.router)
+    await admins_main.admins_bot_start_notification(bot)
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
 

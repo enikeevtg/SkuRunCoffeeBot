@@ -4,7 +4,7 @@ from aiogram.types import ContentType, Message
 import logging
 
 from handlers import messages
-from handlers.menu import DrinkOrder
+from handlers.drink_order import DrinkOrder
 
 
 router = Router()

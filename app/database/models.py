@@ -22,7 +22,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(20))
     first_name: Mapped[str] = mapped_column(String(20))
     last_name: Mapped[str] = mapped_column(String(20))
-    cup_name: Mapped[str] = mapped_column(String(20))
+    nickname: Mapped[str] = mapped_column(String(20))
 
 
 class DrinkCategory(Base):

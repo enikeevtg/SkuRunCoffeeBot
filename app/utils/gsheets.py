@@ -20,9 +20,10 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
      'https://www.googleapis.com/auth/drive'])
 httpAuth = credentials.authorize(httplib2.Http())
 service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
+table_url = 'https://docs.google.com/spreadsheets/d/' + \
+            config('SPREADSHEET_ID') + '/edit'
 
-
-def send_order_to_google_sheet(name, drink):
+def send_order_to_google_sheet(nickname, drink):
     result = (
         service.spreadsheets()
         .values()
@@ -32,7 +33,7 @@ def send_order_to_google_sheet(name, drink):
             valueInputOption="USER_ENTERED",
             body={
                 "majorDimension": "ROWS",
-                "values": [[name, drink]]
+                "values": [[nickname, drink]]
             }
         )
         .execute()
