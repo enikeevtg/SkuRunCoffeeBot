@@ -3,7 +3,7 @@ from aiogram import F, Router
 from aiogram.types import Message
 import logging
 
-from admin import admins_list
+from bot import admins_list
 from database import requests as rq
 from keyboards import i_am_admin_btn_text, admins_kb
 

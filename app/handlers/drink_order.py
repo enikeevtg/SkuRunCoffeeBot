@@ -7,6 +7,7 @@ import logging
 
 # from handlers import drinks
 from database import requests as rq
+from handlers.facts import send_fact
 from handlers import messages, start
 from keyboards import categories_kb_builder, items_kb_builder
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
@@ -105,9 +106,10 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     await callback.message.edit_text(text=messages.order_confirmed +
                                      str(data['drink']).lower())
-    await callback.answer('')
+    await callback.answer()
     await state.set_state(DrinkOrder.order_done)
     gsheets.send_order_to_google_sheet(data['nickname'], data['drink'])
+    await send_fact(callback)
 
 
 @router.callback_query(F.data == reject_btn_cb, DrinkOrder.order_in_process)
@@ -115,6 +117,6 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
-    await callback.answer('')
+    await callback.answer()
     await callback.message.edit_text(text=messages.order_rejected)
     await state.clear()

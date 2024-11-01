@@ -5,8 +5,7 @@ PIP = pip3
 # FILENAMES
 VENV = .venv2
 APP = app
-MAIN_SCRIPT = $(APP)/bot.py
-ANYWHERE_MAIN_SCRIPT = $(APP)/bot_pythonanywhere.py
+MAIN_SCRIPT = $(APP)/run.py
 REQUIREMENTS = requirements.txt
 APP_PACK = app.tar
 WEEKDAY = Sat
@@ -21,7 +20,7 @@ pythonanywhere_run:
 	@if [ $(shell date +%a) = $(WEEKDAY) ]; \
 	then \
 		echo "SkuRunCoffeeBreakBot launching..."; \
-		$(PY) $(ANYWHERE_MAIN_SCRIPT); \
+		$(PY) $(MAIN_SCRIPT); \
 	else \
 		echo "SkuRunCoffeeBreakBot not launched"; \
 	fi;

@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ContentType, Message
 import logging
 
-from admin import admins_list
+from bot import admins_list
 from database import requests as rq
 from handlers import messages
 from keyboards import main_kb, admins_main_kb

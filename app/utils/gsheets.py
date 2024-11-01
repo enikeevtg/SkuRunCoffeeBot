@@ -42,7 +42,7 @@ def send_order_to_google_sheet(nickname, drink):
         f"{(result.get('updates').get('updatedCells'))} cells appended.")
 
 
-def clear_google_sheet():
+def init_google_sheet():
     result = (
         service.spreadsheets()
         .values()

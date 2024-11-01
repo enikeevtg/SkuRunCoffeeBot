@@ -33,9 +33,10 @@ edit_name_cb = 'edit_name'
 add_training_result_cb = 'add_training_result'
 bio_kb = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text='Редактировать никнейм',
-                          callback_data=edit_name_cb)],
-    [InlineKeyboardButton(text='Добавить тренировку',
-                          callback_data=add_training_result_cb)]
+                          callback_data=edit_name_cb)]
+    #                       ,
+    # [InlineKeyboardButton(text='Добавить тренировку',
+    #                       callback_data=add_training_result_cb)]
 ])
 
 # admins keyboard
