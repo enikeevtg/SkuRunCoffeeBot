@@ -5,9 +5,8 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
 import logging
 
-# from handlers import drinks
 from database import requests as rq
-from handlers.facts import send_fact
+from utils.facts import send_fact
 from handlers import messages, start
 from keyboards import categories_kb_builder, items_kb_builder
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,

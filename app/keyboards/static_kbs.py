@@ -53,3 +53,7 @@ admins_kb = InlineKeyboardMarkup(inline_keyboard=[
 no_btn = InlineKeyboardButton(text='❌', callback_data=reject_btn_cb)
 yes_btn = InlineKeyboardButton(text='✅', callback_data=confirm_btn_cb)
 confirmation_kb = InlineKeyboardMarkup(inline_keyboard=[[no_btn, yes_btn]])
+
+github_url = 'https://github.com/enikeevtg/SkuRunCoffeeBot'
+github_kb = InlineKeyboardMarkup(
+    inline_keyboard=[[InlineKeyboardButton(text='GitHub', url=github_url)]])

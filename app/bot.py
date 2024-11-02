@@ -7,8 +7,6 @@ from decouple import config
 import logging
 
 
-admins_list = [int(admin_id) for admin_id in config('ADMINS').split(',')]
-
 logfile = open('skurun.log', 'w')
 format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
 logging.basicConfig(stream=logfile, level=logging.INFO, format=format)
