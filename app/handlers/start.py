@@ -5,7 +5,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ContentType, Message
 import logging
 
-from filters.is_admin import IsAdmin 
+from filters.is_admin import is_admin 
 from database import requests as rq
 from handlers import messages
 from keyboards import main_kb, admins_main_kb
@@ -34,7 +34,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await message.answer(f'Поехали! 🚀',
                          reply_markup=admins_main_kb
                                       if message.from_user.id
-                                      in IsAdmin().admins_ids
+                                      in is_admin.admins_ids
                                       else main_kb)
 
 

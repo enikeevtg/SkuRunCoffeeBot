@@ -28,22 +28,10 @@ async def add_order(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
-    await callback.answer('')
+    await callback.answer()
     await callback.message.answer('Введи имя')
     await state.update_data(prev_state=await state.get_state())
     await state.set_state(AdminDrinkOrder.set_nickname)
-
-
-# @router.message(Command('add_order'),
-#                 F.from_user.id.in_(admins_list),
-#                 StateFilter(None, DrinkOrder.order_done))
-# async def cmd_add_order(message: Message, state: FSMContext):
-#     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-#                 f'{message.text}]')
-
-#     await message.answer('Введи имя')
-#     await state.update_data(prev_state=await state.get_state())
-#     await state.set_state(AdminDrinkOrder.set_name)
 
 
 @router.message(StateFilter(AdminDrinkOrder.set_nickname))

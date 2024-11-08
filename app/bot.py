@@ -12,8 +12,11 @@ format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
 logging.basicConfig(stream=logfile, level=logging.INFO, format=format)
 logger = logging.getLogger(__name__)
 
-session = AiohttpSession()
-# session = AiohttpSession(proxy="http://proxy.server:3128")
+mode = config('MODE')
+if mode == 'TEST':
+    session = AiohttpSession()
+elif mode == 'PROD':
+    session = AiohttpSession(proxy="http://proxy.server:3128")
 bot = Bot(token=config('TOKEN'),
           session=session,
           default=DefaultBotProperties(parse_mode=ParseMode.HTML))

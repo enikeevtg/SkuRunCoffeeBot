@@ -39,7 +39,7 @@ async def edit_name(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
-    await callback.answer('')
+    await callback.answer()
     await callback.message.answer(text=messages.input_new_nickname)
     await state.update_data(prev_state=await state.get_state())
     await state.set_state(NameEdition.set_new_name)
