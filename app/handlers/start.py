@@ -30,12 +30,9 @@ async def cmd_start(message: Message, state: FSMContext):
     if not user_cup_name:
         await message.answer(messages.register_request)
         await state.set_state(Registration.set_nickname)
+        return
 
-    await message.answer(f'Поехали! 🚀',
-                         reply_markup=admins_main_kb
-                                      if message.from_user.id
-                                      in is_admin.admins_ids
-                                      else main_kb)
+    await lets_go(message)
 
 
 @router.message(F.content_type == ContentType.TEXT,
@@ -47,5 +44,14 @@ async def set_nickname(message: Message, state: FSMContext):
     if message.text.replace(' ', '').isalpha() is False:
         await message.answer(messages.incorrect_nickname)
     else:
+        await lets_go(message)
         await rq.set_user(message.from_user, message.text.strip())
         await state.clear()
+
+
+async def lets_go(message: Message):
+    await message.answer(f'Поехали! 🚀',
+                         reply_markup=admins_main_kb
+                                      if message.from_user.id
+                                      in is_admin.admins_ids
+                                      else main_kb)
