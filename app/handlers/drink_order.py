@@ -11,7 +11,7 @@ from handlers import messages, start
 from keyboards import categories_kb_builder, items_kb_builder
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
                        confirm_btn_cb, reject_btn_cb, confirmation_kb)
-from utils import gsheets
+from bot import spreadsheet
 
 
 router = Router()
@@ -107,10 +107,10 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
                                      str(data['drink']).lower())
     await callback.answer()
     await state.set_state(DrinkOrder.order_done)
-    gsheets.send_order(callback.from_user.id,
-                       callback.from_user.username,
-                       data['nickname'],
-                       data['drink'])
+    spreadsheet.add_order(callback.from_user.id,
+                          callback.from_user.username,
+                          data['nickname'],
+                          data['drink'])
     await send_fact(callback)
 
 

@@ -2,13 +2,11 @@ import asyncio
 
 from admin import add_order, admins_main
 from bot import bot, dp
-from handlers import bio, drink_order, not_text_handler, start 
+from handlers import bio, drink_order, not_text_handler, start
 from database.models import db_main
-from utils import gsheets
 
 
 async def main():
-    gsheets.init_google_sheet()
     await db_main()
     dp.include_routers(not_text_handler.router, start.router,
                        admins_main.router, add_order.router,

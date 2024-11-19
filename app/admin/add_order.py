@@ -8,7 +8,7 @@ from aiogram.types import CallbackQuery, Message
 import logging
 
 from handlers.drink_order import DrinkOrder
-from utils import gsheets
+from bot import spreadsheet
 from keyboards import add_order_btn_cb, admins_kb
 
 
@@ -54,5 +54,8 @@ async def admin_create_order(message: Message, state: FSMContext):
     data = await state.get_data()
     nickname = data.get('nickname')
     drink = message.text
-    gsheets.send_order(nickname, drink)
+    spreadsheet.add_order(message.from_user.id,
+                          message.from_user.username,
+                          nickname,
+                          drink)
     await state.set_state(data['prev_state'])

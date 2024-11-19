@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from utils.gsheets import table_url
+from bot import spreadsheet
 
 
 # reply keyboard buttons text
@@ -13,6 +13,8 @@ profile_btn_text = 'Профиль 👤'
 add_order_btn_cb = 'add_order'
 confirm_btn_cb = 'confirm'
 reject_btn_cb = 'reject'
+start_location_tracking = 'start_location_tracking'
+stop_location_tracking = 'stop_location_tracking'
 
 # main menu keyboard
 menu_btn = KeyboardButton(text=drink_order_btn_text)
@@ -43,7 +45,7 @@ bio_kb = InlineKeyboardMarkup(inline_keyboard=[
 add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ бегуна в таблицу',
                                      callback_data=add_order_btn_cb)
 open_table_btn = InlineKeyboardButton(text='📄 Открыть таблицу',
-                                      url=table_url)
+                                      url=spreadsheet.spreadsheet_url)
 admins_kb = InlineKeyboardMarkup(inline_keyboard=[
     [add_order_btn],
     [open_table_btn]
