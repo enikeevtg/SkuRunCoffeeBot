@@ -66,6 +66,8 @@
 
     + [Telegram Боты на Aiogram 3.x: Магия фильтров](https://habr.com/ru/articles/821085/)
 
+    + [asynpg-lite: Простой асинхронный менеджер для PostgreSQL на Python](https://habr.com/ru/articles/821323/)
+
     + [Telegram Боты на Aiogram 3.x: Message handler и трюки с текстом](https://habr.com/ru/articles/821661/)
 
     + [Telegram Боты на Aiogram 3.x: Отправка и обработка медиа сообщений](https://habr.com/ru/articles/821961/)
@@ -94,6 +96,8 @@
 + [Документация Google Sheets Guides](https://developers.google.com/sheets/api/guides/concepts)
 
     + [Read & write cell values](https://developers.google.com/sheets/api/guides/values)
+
+    + [Method: spreadsheets.batchUpdate](https://developers.google.com/sheets/api/reference/rest/v4/spreadsheets/batchUpdate)
 
 + [Генерируем красивую Google-таблицу из своей программы (используя Google Sheets API v4)](https://habr.com/ru/articles/305378/)
 

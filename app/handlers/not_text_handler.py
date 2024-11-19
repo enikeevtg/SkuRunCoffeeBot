@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 # @router.message(F.content_type != ContentType.TEXT,
-@router.message(~F.text,
-                StateFilter(None, DrinkOrder.order_done))
-async def other_messages_handler_excluded_states(message: Message):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.content_type}]')
+# @router.message(~F.text,
+#                 StateFilter(None, DrinkOrder.order_done))
+# async def other_messages_handler_excluded_states(message: Message):
+#     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
+#                 f'{message.content_type}]')
 
 
 # @router.message(F.content_type != ContentType.TEXT)

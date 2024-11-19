@@ -107,7 +107,10 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
                                      str(data['drink']).lower())
     await callback.answer()
     await state.set_state(DrinkOrder.order_done)
-    gsheets.send_order_to_google_sheet(data['nickname'], data['drink'])
+    gsheets.send_order(callback.from_user.id,
+                       callback.from_user.username,
+                       data['nickname'],
+                       data['drink'])
     await send_fact(callback)
 
 

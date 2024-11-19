@@ -2,6 +2,7 @@ import apiclient
 from decouple import config
 import httplib2
 from oauth2client.service_account import ServiceAccountCredentials
+from googleapiclient.errors import HttpError
 import logging
 
 
@@ -23,60 +24,72 @@ service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
 table_url = 'https://docs.google.com/spreadsheets/d/' + \
             config('SPREADSHEET_ID') + '/edit'
 
-def send_order_to_google_sheet(nickname, drink):
-    result = (
-        service.spreadsheets()
-        .values()
-        .append(
-            spreadsheetId=config('SPREADSHEET_ID'),
-            range=config('SHEET_NAME'),
-            valueInputOption="USER_ENTERED",
-            body={
-                "majorDimension": "ROWS",
-                "values": [[nickname, drink]]
-            }
-        )
-        .execute()
-    )
-    logger.info(
-        f"{(result.get('updates').get('updatedCells'))} cells appended.")
-
 
 def init_google_sheet():
-    result = (
-        service.spreadsheets()
-        .values()
-        .clear(
-            spreadsheetId=config('SPREADSHEET_ID'),
-            range=config('SHEET_NAME')
+    try:
+        response = (
+            service.spreadsheets()
+            .values()
+            .clear(
+                spreadsheetId=config('SPREADSHEET_ID'),
+                range=config('SHEET_NAME')
+            )
+            .execute()
         )
-        .execute()
-    )
 
-    result = (
-        service.spreadsheets()
-        .values()
-        .append(
-            spreadsheetId=config('SPREADSHEET_ID'),
-            range=config('SHEET_NAME'),
-            valueInputOption="USER_ENTERED",
-            body={'values': [['имя', 'напиток']]}
+        response = (
+            service.spreadsheets()
+            .values()
+            .append(
+                spreadsheetId=config('SPREADSHEET_ID'),
+                range=config('SHEET_NAME'),
+                valueInputOption="USER_ENTERED",
+                body={'values': [['Имя', 'Напиток', 'Статус']]}
+            )
+            .execute()
         )
-        .execute()
-    )
-    logger.info(
-        f"{(result.get('updates').get('updatedCells'))} cells appended.")
+        logger.info(f"response: {response}")
+        return response
+
+    except HttpError as error:
+        logger.error(f"An error occured: {error}")
+        return error
 
 
-# def send_order_to_google_sheet(row_id, name, drink):
-    # service.spreadsheets().values().batchUpdate(
-    #     spreadsheetId=config('SPREADSHEET_ID'),
-    #     body={
-    #         "valueInputOption": "USER_ENTERED",
-    #         "data": [
-    #             {"range": f'''A{row_id}:B{row_id}''',
-    #             "majorDimension": "ROWS",
-    #             "values": [[name, drink]]}
-    #         ]
-    #     } 
-    # ).execute()
+def send_order(tg_id, username, nickname, drink):
+    try:
+        requests = []
+        requests.append(
+            {
+                "appendCells": {
+                    "sheetId": 0,
+                    "rows": [
+                        {"values": [
+                            {"userEnteredValue": {"stringValue": nickname}},
+                            {"userEnteredValue": {"stringValue": drink}},
+                            {"dataValidation": {
+                                "condition": {
+                                    "type": "BOOLEAN",
+                                    "values": [{"userEnteredValue": "OrderDone"}]
+                                }
+                            }}
+                        ]}
+                    ],
+                    "fields": "*"
+                }
+            }
+        )
+
+        body = {'requests': requests}
+        response = (
+            service.spreadsheets()
+            .batchUpdate(spreadsheetId=config('SPREADSHEET_ID'), body=body)
+            .execute()
+        )
+        logger.info(f'[{tg_id}, {username}: | {nickname} | {drink} | [ ] | ' +
+                    'cells appended.]')
+        return response
+
+    except HttpError as error:
+        logger.error(f"An error occured: {error}")
+        return error

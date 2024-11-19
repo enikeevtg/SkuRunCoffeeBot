@@ -54,5 +54,5 @@ async def admin_create_order(message: Message, state: FSMContext):
     data = await state.get_data()
     nickname = data.get('nickname')
     drink = message.text
-    gsheets.send_order_to_google_sheet(nickname, drink)
+    gsheets.send_order(nickname, drink)
     await state.set_state(data['prev_state'])
