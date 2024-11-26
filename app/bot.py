@@ -9,11 +9,13 @@ import logging
 from utils.orders_spreadsheet import OrdersSpreadsheet
 
 
-
 logfile = open('skurun.log', 'w')
 format = "%(asctime)s - %(levelname)s - %(funcName)s: %(lineno)d - %(message)s"
 logging.basicConfig(stream=logfile, level=logging.INFO, format=format)
 logger = logging.getLogger(__name__)
+
+group_id = int(config('GROUP_ID'))
+admins_ids = [int(id) for id in config('ADMINS').split(',')]
 
 mode = config('MODE')
 if mode == 'TEST':

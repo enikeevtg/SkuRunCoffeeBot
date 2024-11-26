@@ -3,15 +3,17 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, CallbackQuery
+from aiogram.utils.chat_action import ChatActionSender
+import asyncio
 import logging
 
+from bot import bot, spreadsheet
 from database import requests as rq
-from utils.facts import send_fact
 from handlers import messages, start
 from keyboards import categories_kb_builder, items_kb_builder
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
                        confirm_btn_cb, reject_btn_cb, confirmation_kb)
-from bot import spreadsheet
+from utils.facts import get_fact
 
 
 router = Router()
@@ -47,7 +49,7 @@ async def order_when_order_in_process(message: Message):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')
 
-    await message.answer(text='Выбирай напиток из меню выше')
+    await message.answer(text=messages.choose_drink_above)
 
 
 @router.message(F.text == drink_order_btn_text,
@@ -78,6 +80,7 @@ async def display_drink_categories_again(callback: CallbackQuery):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
     
+    await callback.answer()
     await callback.message.edit_text(text=messages.choose_drink, 
                                      reply_markup=await categories_kb_builder())
 
@@ -88,6 +91,7 @@ async def order_confirmation(callback: CallbackQuery,
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
+    await callback.answer()
     item = await rq.get_item_by_id(callback.data.split('_')[1])
     await state.update_data(drink=item.name)
     data = await state.get_data()
@@ -102,16 +106,19 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
+    await callback.answer()
     data = await state.get_data()
     await callback.message.edit_text(text=messages.order_confirmed +
                                      str(data['drink']).lower())
-    await callback.answer()
     await state.set_state(DrinkOrder.order_done)
     spreadsheet.add_order(callback.from_user.id,
                           callback.from_user.username,
                           data['nickname'],
                           data['drink'])
-    await send_fact(callback)
+    async with ChatActionSender(bot=bot, chat_id=callback.from_user.id,
+                                action='typing'):
+        await asyncio.sleep(1)
+        await callback.message.answer(await get_fact())
 
 
 @router.callback_query(F.data == reject_btn_cb, DrinkOrder.order_in_process)

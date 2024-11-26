@@ -13,8 +13,6 @@ profile_btn_text = 'Профиль 👤'
 add_order_btn_cb = 'add_order'
 confirm_btn_cb = 'confirm'
 reject_btn_cb = 'reject'
-start_location_tracking = 'start_location_tracking'
-stop_location_tracking = 'stop_location_tracking'
 
 # main menu keyboard
 menu_btn = KeyboardButton(text=drink_order_btn_text)
@@ -42,7 +40,7 @@ bio_kb = InlineKeyboardMarkup(inline_keyboard=[
 ])
 
 # admins keyboard
-add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ бегуна в таблицу',
+add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ вручную',
                                      callback_data=add_order_btn_cb)
 open_table_btn = InlineKeyboardButton(text='📄 Открыть таблицу',
                                       url=spreadsheet.spreadsheet_url)
@@ -59,3 +57,14 @@ confirmation_kb = InlineKeyboardMarkup(inline_keyboard=[[no_btn, yes_btn]])
 github_url = 'https://github.com/enikeevtg/SkuRunCoffeeBot'
 github_kb = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='GitHub', url=github_url)]])
+
+# redirection keyboard
+# Предлагает выбрать чат и заполняет поле ввода сообщением типа @Bot qwerty
+# redirection_btn = InlineKeyboardButton(text="query='qwerty'", 
+#                                        switch_inline_query='qwerty')
+# В чате с ботом появляется сообщение с выбором напитка
+# redirection_btn = InlineKeyboardButton(text='Записаться',
+#                                        callback_data=drink_order_btn_text)
+redirection_btn = InlineKeyboardButton(text='Записаться',
+                                       url='https://t.me/SkuRunCoffeeBreakBot')
+redirection_kb = InlineKeyboardMarkup(inline_keyboard=[[redirection_btn]])

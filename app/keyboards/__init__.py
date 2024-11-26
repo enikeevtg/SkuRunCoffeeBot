@@ -7,3 +7,4 @@ from .static_kbs import (drink_order_btn_text, profile_btn_text,
 from .static_kbs import (main_kb, admins_main_kb, bio_kb, admins_kb,
                          edit_name_cb, add_training_result_cb, confirmation_kb)
 from .static_kbs import github_kb
+from .static_kbs import redirection_kb
