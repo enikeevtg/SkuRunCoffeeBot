@@ -66,5 +66,5 @@ github_kb = InlineKeyboardMarkup(
 # redirection_btn = InlineKeyboardButton(text='Записаться',
 #                                        callback_data=drink_order_btn_text)
 redirection_btn = InlineKeyboardButton(text='Записаться',
-                                       url='https://t.me/SkuRunCoffeeBreakBot')
+                                       callback_data='redirect')
 redirection_kb = InlineKeyboardMarkup(inline_keyboard=[[redirection_btn]])
