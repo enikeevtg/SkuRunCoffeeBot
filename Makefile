@@ -43,14 +43,6 @@ freeze_deps:
 install_deps: $(REQUIREMENTS)
 	$(PIP) install -r $^
 
+dirs = $(shell find . -type d -name *__pycache__ | grep -v .venv)
 clean:
-	rm -rf __pycache__
-	rm -rf $(APP)/__pycache__
-	rm -rf research/__pycache__
-	rm -rf reserves/__pycache__
-	rm -rf $(APP)/admin/__pycache__
-	rm -rf $(APP)/database/__pycache__
-	rm -rf $(APP)/filters/__pycache__
-	rm -rf $(APP)/handlers/__pycache__
-	rm -rf $(APP)/keyboards/__pycache__
-	rm -rf $(APP)/utils/__pycache__
+	rm -rf $(dirs)
