@@ -8,7 +8,7 @@ import logging
 from bot import admins_ids
 from database import requests as rq
 from handlers import messages
-from keyboards import main_kb, admins_main_kb
+from keyboards import admins_main_kb, main_kb
 
 
 router = Router()
@@ -54,33 +54,3 @@ async def lets_go(message: Message):
                                       if message.from_user.id
                                       in admins_ids
                                       else main_kb)
-
-
-async def redirection_test(message: Message):
-    import aiohttp
-    from decouple import config
-
-    from bot import bot
-    from keyboards import redirection_kb
-
-    goods = [
-        '26/11/2024 Поставщик_1 Точка_1 с 12:00 до 15:00',
-        '27/11/2024 Поставщик_2 Точка_2 с 09:00 до 11:00',
-        '28/11/2024 Поставщик_3 Точка_3 с 11:00 до 12:00',
-        '29/11/2024 Поставщик_4 Точка_4 с 15:00 до 17:00',
-        '30/11/2024 Поставщик_5 Точка_2 с 10:00 до 11:00',
-    ]
-    for good in goods:
-        await bot.send_message(chat_id=config('GROUP_ID'),
-                               text=good,
-                               reply_markup=redirection_kb)
-
-    url = f"https://api.telegram.org/bot{config('TOKEN')}/sendMessage"
-    params = {
-        "chat_id": 819128057,
-        "text": f'{message.chat.id}'
-    }
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, params=params) as response:
-        # async with session.request('POST', url, params=params) as response:
-            print(f'start.py: 73 {response.status=}. {message.chat.id=}')

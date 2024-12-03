@@ -8,6 +8,7 @@ import logging
 from database import requests as rq
 from handlers import start
 from handlers import messages
+from handlers.drink_order import DrinkOrder
 from keyboards import profile_btn_text, bio_kb, edit_name_cb
 
 
@@ -19,7 +20,8 @@ class NameEdition(StatesGroup):
     set_new_name = State()
 
 
-@router.message(F.text == profile_btn_text, StateFilter(None))
+@router.message(F.text == profile_btn_text,
+                StateFilter(None, DrinkOrder.order_done))
 async def display_user_bio(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
                 f'{message.text}]')

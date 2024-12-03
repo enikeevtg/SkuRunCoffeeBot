@@ -39,12 +39,12 @@ bio_kb = InlineKeyboardMarkup(inline_keyboard=[
     #                       callback_data=add_training_result_cb)]
 ])
 
-# admins keyboard
+# admin inline keyboard
 add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ вручную',
                                      callback_data=add_order_manually_btn_cb)
 open_table_btn = InlineKeyboardButton(text='📄 Открыть таблицу',
                                       url=spreadsheet.spreadsheet_url)
-admins_kb = InlineKeyboardMarkup(inline_keyboard=[
+admin_inline_kb = InlineKeyboardMarkup(inline_keyboard=[
     [add_order_btn],
     [open_table_btn]
 ])

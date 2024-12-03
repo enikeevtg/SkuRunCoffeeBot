@@ -127,4 +127,5 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
 
     await callback.answer()
     await callback.message.edit_text(text=messages.order_rejected)
-    await state.clear()
+    data = await state.get_data()
+    await state.set_state(data.get('prev_state', None))
