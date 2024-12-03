@@ -7,12 +7,11 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 import logging
 
-from handlers.drink_order import DrinkOrder
 from bot import spreadsheet
-from keyboards import add_order_btn_cb, admins_kb
+from keyboards import add_order_manually_btn_cb, admins_kb
 
 
-router = Router()
+router = Router(name=__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -22,9 +21,8 @@ class AdminDrinkOrder(StatesGroup):
     order_done = State()
 
 
-@router.callback_query(F.data == add_order_btn_cb,
-                       StateFilter(None, DrinkOrder.order_done))
-async def add_order(callback: CallbackQuery, state: FSMContext):
+@router.callback_query(F.data == add_order_manually_btn_cb)
+async def add_order_manually(callback: CallbackQuery, state: FSMContext):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
 
@@ -40,7 +38,7 @@ async def add_drink(message: Message, state: FSMContext):
                 f'{message.text}]')
 
     await message.answer(text='Введи название напитка')
-    await state.update_data(nickname=message.text)
+    await state.update_data(user_nickname=message.text)
     await state.set_state(AdminDrinkOrder.set_drink)
 
 
@@ -52,10 +50,10 @@ async def admin_create_order(message: Message, state: FSMContext):
     await message.answer('Записал ✅',
                          reply_markup=admins_kb)
     data = await state.get_data()
-    nickname = data.get('nickname')
+    user_nickname = data.get('user_nickname')
     drink = message.text
-    spreadsheet.add_order(message.from_user.id,
-                          message.from_user.username,
-                          nickname,
-                          drink)
+    spreadsheet.send_order(message.from_user.id,
+                           message.from_user.username,
+                           user_nickname,
+                           drink)
     await state.set_state(data['prev_state'])

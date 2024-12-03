@@ -23,7 +23,7 @@ class OrdersSpreadsheet:
         httpAuth = creds.authorize(httplib2.Http())
         self.service = apiclient.discovery.build('sheets',
                                                  'v4',
-                                                 http = httpAuth)
+                                                 http=httpAuth)
         self.__init_orders_spreadsheet()
         
     def __init_orders_spreadsheet(self) -> None:
@@ -54,11 +54,11 @@ class OrdersSpreadsheet:
         except HttpError as error:
             self.logger.error(f'An error occured: {error}')
 
-    def add_order(self,
-                  tg_id: int,
-                  username: str,
-                  nickname: str,
-                  drink: str):
+    def send_order(self,
+                   tg_id: int,
+                   username: str,
+                   nickname: str,
+                   drink: str):
         try:
             requests = []
             requests.append(

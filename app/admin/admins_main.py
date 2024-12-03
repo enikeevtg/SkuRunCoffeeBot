@@ -7,7 +7,7 @@ from database import requests as rq
 from keyboards import i_am_admin_btn_text, admins_kb
 
 
-router = Router()
+router = Router(name=__name__)
 logger = logging.getLogger(__name__)
 
 

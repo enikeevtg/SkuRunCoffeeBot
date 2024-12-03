@@ -1,4 +1,5 @@
 from aiogram import F, Router
+from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.types import ContentType, CallbackQuery, Message
@@ -10,7 +11,7 @@ from handlers import messages
 from keyboards import profile_btn_text, bio_kb, edit_name_cb
 
 
-router = Router()
+router = Router(name=__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -18,10 +19,10 @@ class NameEdition(StatesGroup):
     set_new_name = State()
 
 
-@router.message(F.text == profile_btn_text)
+@router.message(F.text == profile_btn_text, StateFilter(None))
 async def display_user_bio(message: Message, state: FSMContext):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
+                f'{message.text}]')
     
     # Временная проверка наличия пользователя в базе данных
     cur_cup_name = await rq.get_nickname(message.from_user.id)

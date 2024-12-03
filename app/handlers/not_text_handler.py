@@ -7,7 +7,7 @@ from handlers import messages
 from handlers.drink_order import DrinkOrder
 
 
-router = Router()
+router = Router(name=__name__)
 logger = logging.getLogger(__name__)
 
 
@@ -22,15 +22,6 @@ logger = logging.getLogger(__name__)
 #         fp.write(f'GROUP_ID={message.chat.id}\n')
 
 
-# @router.message(F.content_type != ContentType.TEXT,
-# @router.message(~F.text,
-#                 StateFilter(None, DrinkOrder.order_done))
-# async def other_messages_handler_excluded_states(message: Message):
-#     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-#                 f'{message.content_type}]')
-
-
-# @router.message(F.content_type != ContentType.TEXT)
 @router.message(~F.text)
 async def other_messages_handler(message: Message):
     logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \

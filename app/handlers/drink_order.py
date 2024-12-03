@@ -16,11 +16,10 @@ from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
 from utils.facts import get_fact
 
 
-router = Router()
+router = Router(name=__name__)
 logger = logging.getLogger(__name__)
 
 
-# FSM states
 class DrinkOrder(StatesGroup):
     order_in_process = State()
     order_done = State()
@@ -80,7 +79,7 @@ async def display_drink_categories_again(callback: CallbackQuery):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
     
-    await callback.answer()
+    await callback.answer(cache_time=11)
     await callback.message.edit_text(text=messages.choose_drink, 
                                      reply_markup=await categories_kb_builder())
 
@@ -111,7 +110,7 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text=messages.order_confirmed +
                                      str(data['drink']).lower())
     await state.set_state(DrinkOrder.order_done)
-    spreadsheet.add_order(callback.from_user.id,
+    spreadsheet.send_order(callback.from_user.id,
                           callback.from_user.username,
                           data['nickname'],
                           data['drink'])

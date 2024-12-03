@@ -10,7 +10,7 @@ drink_order_btn_text = 'Выбрать ☕️'
 profile_btn_text = 'Профиль 👤'
 
 # inline keyboard buttons callback data
-add_order_btn_cb = 'add_order'
+add_order_manually_btn_cb = 'add_order_manually'
 confirm_btn_cb = 'confirm'
 reject_btn_cb = 'reject'
 
@@ -41,7 +41,7 @@ bio_kb = InlineKeyboardMarkup(inline_keyboard=[
 
 # admins keyboard
 add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ вручную',
-                                     callback_data=add_order_btn_cb)
+                                     callback_data=add_order_manually_btn_cb)
 open_table_btn = InlineKeyboardButton(text='📄 Открыть таблицу',
                                       url=spreadsheet.spreadsheet_url)
 admins_kb = InlineKeyboardMarkup(inline_keyboard=[

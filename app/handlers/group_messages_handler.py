@@ -5,7 +5,7 @@ import logging
 from bot import group_id
 logger = logging.getLogger(__name__)
 
-router = Router()
+router = Router(name=__name__)
 
 
 @router.message(F.chat.id == group_id)
