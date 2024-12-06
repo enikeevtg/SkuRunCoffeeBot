@@ -7,7 +7,7 @@ from aiogram.utils.chat_action import ChatActionSender
 import asyncio
 import logging
 
-from bot import bot, spreadsheet
+from bot import bot, orders_spreadsheet
 from database import requests as rq
 from handlers import messages, start
 from keyboards import categories_kb_builder, items_kb_builder
@@ -110,10 +110,10 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text(text=messages.order_confirmed +
                                      str(data['drink']).lower())
     await state.set_state(DrinkOrder.order_done)
-    spreadsheet.send_order(callback.from_user.id,
-                          callback.from_user.username,
-                          data['nickname'],
-                          data['drink'])
+    await orders_spreadsheet.send_order(callback.from_user.id,
+                                        callback.from_user.username,
+                                        data['nickname'],
+                                        data['drink'])
     async with ChatActionSender(bot=bot, chat_id=callback.from_user.id,
                                 action='typing'):
         await asyncio.sleep(1)

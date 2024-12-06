@@ -15,4 +15,4 @@ async def redirect(callback: CallbackQuery):
                 f'{callback.data}]')
 
     bot_me = await callback.bot.me()
-    await callback.answer(url=f't.me/{bot_me.username}?start=0')
+    await callback.answer(url=f't.me/{bot_me.username}?start=redirect_from_sku_run')

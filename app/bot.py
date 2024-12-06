@@ -6,7 +6,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from decouple import config
 import logging
 
-from utils.orders_spreadsheet import OrdersSpreadsheet
+from utils.orders_spreadsheet import GoogleSpreadsheetsRequests
 
 
 logfile = open('skurun.log', 'w')
@@ -26,6 +26,5 @@ bot = Bot(token=config('TOKEN'),
           session=session,
           default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher(storage=MemoryStorage())
-spreadsheet = OrdersSpreadsheet(config('SPREADSHEET_ID'),
-                                config('CREDENTIALS_FILE'))
-spreadsheet.spreadsheet_url
+orders_spreadsheet = GoogleSpreadsheetsRequests(config('CREDENTIALS_FILE'),
+                                                config('SPREADSHEET_ID'))

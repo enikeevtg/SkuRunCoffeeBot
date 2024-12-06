@@ -7,7 +7,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 import logging
 
-from bot import spreadsheet
+from bot import orders_spreadsheet
 from keyboards import add_order_manually_btn_cb, admins_main_kb
 
 
@@ -52,10 +52,10 @@ async def admin_create_order(message: Message, state: FSMContext):
     data = await state.get_data()
     user_nickname = data.get('user_nickname')
     drink = message.text
-    spreadsheet.send_order(message.from_user.id,
-                           message.from_user.username,
-                           user_nickname,
-                           drink)
+    await orders_spreadsheet.send_order(message.from_user.id,
+                                        message.from_user.username,
+                                        user_nickname,
+                                        drink)
     await message.answer('Записал ✅',
                          reply_markup=admins_main_kb)
     await state.set_state(data['prev_state'])

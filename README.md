@@ -104,3 +104,15 @@
 + [Google Sheets API + Python. Чтение и запись с Сервисным Аккаунтом Google Cloud](https://habr.com/ru/articles/575160/)
 
 + [Видео: Работаем с Google Sheets API на Python](https://www.youtube.com/watch?v=Bf8KHZtcxnA)
+
+### Для разработки асинхронных запросов в Google Sheets API
+
++ [Авторизация OAuth 2.0 от Google, небольшое упущение его разработчиков и Python](https://habr.com/ru/articles/713442/)
+
++ [OAuth 2: введение в протокол авторизации](https://selectel.ru/blog/oauth-2/)
+
++ [Retrieving Access Token from Service Account using oauth2client and google-auth with Python](https://gist.github.com/tanaikech/5196ed237812192539c4369000bc131b)
+
++ [Подробно про JWT](https://habr.com/ru/articles/842056/)
+
++ [ The OAuth 2.0 Authorization Framework...Token Endpoint](https://datatracker.ietf.org/doc/html/rfc6749#section-3.2:~:text=first.%0A%0A3.2.-,Token%20Endpoint,-The%20token%20endpoint)

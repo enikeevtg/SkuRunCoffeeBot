@@ -1,7 +1,7 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
 
-from bot import spreadsheet
+from bot import orders_spreadsheet
 
 
 # reply keyboard buttons text
@@ -43,7 +43,7 @@ bio_kb = InlineKeyboardMarkup(inline_keyboard=[
 add_order_btn = InlineKeyboardButton(text='✍🏼 Добавить заказ вручную',
                                      callback_data=add_order_manually_btn_cb)
 open_table_btn = InlineKeyboardButton(text='📄 Открыть таблицу',
-                                      url=spreadsheet.spreadsheet_url)
+                                      url=orders_spreadsheet.url)
 admin_inline_kb = InlineKeyboardMarkup(inline_keyboard=[
     [add_order_btn],
     [open_table_btn]
@@ -59,12 +59,6 @@ github_kb = InlineKeyboardMarkup(
     inline_keyboard=[[InlineKeyboardButton(text='GitHub', url=github_url)]])
 
 # redirection keyboard
-# Предлагает выбрать чат и заполняет поле ввода сообщением типа @Bot qwerty
-# redirection_btn = InlineKeyboardButton(text="query='qwerty'", 
-#                                        switch_inline_query='qwerty')
-# В чате с ботом появляется сообщение с выбором напитка
-# redirection_btn = InlineKeyboardButton(text='Записаться',
-#                                        callback_data=drink_order_btn_text)
 redirection_btn = InlineKeyboardButton(text='Записаться',
                                        callback_data='redirect')
 redirection_kb = InlineKeyboardMarkup(inline_keyboard=[[redirection_btn]])
