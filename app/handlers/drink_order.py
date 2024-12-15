@@ -10,7 +10,7 @@ import logging
 from bot import bot, orders_spreadsheet
 from database import requests as rq
 from handlers import messages, start
-from keyboards import categories_kb_builder, items_kb_builder
+from keyboards import categories_kb, items_kb_builder
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
                        confirm_btn_cb, reject_btn_cb, confirmation_kb)
 from utils.facts import get_fact
@@ -37,7 +37,7 @@ async def display_drink_categories(message: Message, state: FSMContext):
         return
 
     await message.answer(text=messages.choose_drink, 
-                         reply_markup=await categories_kb_builder())
+                         reply_markup=categories_kb)
     await state.update_data(nickname=nickname)
     await state.set_state(DrinkOrder.order_in_process)
 
@@ -69,9 +69,8 @@ async def display_drink_items_by_category(callback: CallbackQuery) -> None:
                 f'{callback.data}]')
 
     await callback.answer()
-    category_id = callback.data.split('_')[1]
     await callback.message.edit_text(text=messages.choose_option,
-                              reply_markup=await items_kb_builder(category_id))
+                              reply_markup=items_kb_builder(callback.data))
 
 
 @router.callback_query(F.data == back_to_categories_btn_cb)
@@ -81,7 +80,7 @@ async def display_drink_categories_again(callback: CallbackQuery):
     
     await callback.answer(cache_time=11)
     await callback.message.edit_text(text=messages.choose_drink, 
-                                     reply_markup=await categories_kb_builder())
+                                     reply_markup=categories_kb)
 
 
 @router.callback_query(F.data.startswith('item_'))
@@ -91,8 +90,8 @@ async def order_confirmation(callback: CallbackQuery,
                 f'{callback.data}]')
 
     await callback.answer()
-    item = await rq.get_item_by_id(callback.data.split('_')[1])
-    await state.update_data(drink=item.name)
+    item_name = callback.data.split('_')[2]
+    await state.update_data(drink=item_name)
     data = await state.get_data()
     await callback.message.edit_text(
                 messages.order_confirmation
@@ -114,7 +113,7 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
                                         callback.from_user.username,
                                         data['nickname'],
                                         data['drink'])
-    async with ChatActionSender(bot=bot, chat_id=callback.from_user.id,
+    async with ChatActionSender(bot=callback.bot, chat_id=callback.from_user.id,
                                 action='typing'):
         await asyncio.sleep(1)
         await callback.message.answer(await get_fact())

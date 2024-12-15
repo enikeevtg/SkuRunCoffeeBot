@@ -1,33 +1,33 @@
-# Клавиатуры
-
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import asyncio
+from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 import logging
 
-from database.requests import get_categoties, get_category_items
+from utils.drinks_menu import create_drinks_menu
 
 
 logger = logging.getLogger(__name__)
 
 
 back_to_categories_btn_cb = 'back_to_categories'
+drinks = asyncio.run(create_drinks_menu())
 
-
-async def categories_kb_builder() -> InlineKeyboardMarkup:
-    categories = await get_categoties()
+def categories_kb_builder() -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
-    for category in categories:
-        keyboard.button(text=category.name,
-                        callback_data=f'category_{category.id}')
+    for category in drinks.keys():
+        keyboard.button(text=category.split('_')[2],
+                        callback_data=category)
     return keyboard.adjust(1).as_markup()
 
 
-async def items_kb_builder(category_id: int) -> InlineKeyboardMarkup:
-    items = await get_category_items(category_id)
+categories_kb = categories_kb_builder()
+
+
+def items_kb_builder(category_key: str) -> InlineKeyboardMarkup:
     keyboard = InlineKeyboardBuilder()
-    for item in items:
-        keyboard.button(text=item.name,
-                        callback_data=f'item_{item.id}')
+    for item in drinks[category_key]:
+        keyboard.button(text=item.split('_')[2],
+                        callback_data=item)
     keyboard.button(text='⬅️ Назад в основное меню',
                     callback_data=back_to_categories_btn_cb)
     return keyboard.adjust(1).as_markup()

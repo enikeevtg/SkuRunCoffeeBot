@@ -1,6 +1,5 @@
 from aiogram import F, Router
-from aiogram.filters import StateFilter
-from aiogram.types import ContentType, Message
+from aiogram.types import Message
 import logging
 
 from handlers import messages

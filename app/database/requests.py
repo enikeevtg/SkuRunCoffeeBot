@@ -1,4 +1,5 @@
 from sqlalchemy import select, update
+from typing import List
 
 from database.models import async_session
 from database.models import User, DrinkCategory, DrinkItem
@@ -35,16 +36,21 @@ async def update_nickname(tg_id: int, nickname: str) -> None:
         await session.commit()
 
 
-async def get_categoties():
+async def get_categories() -> List[DrinkCategory]:
     async with async_session() as session:
         return await session.scalars(select(DrinkCategory))
 
 
-async def get_category_items(category_id: int):
+async def get_category_items(category_id: int) -> List[DrinkItem]:
     async with async_session() as session:
         return await session.scalars(select(DrinkItem)
                                      .where(DrinkItem.category_id ==
                                             category_id))
+
+
+async def get_all_items() -> List[DrinkItem]:
+    async with async_session() as session:
+        return await session.scalars(select(DrinkItem))
 
 
 async def get_item_by_id(item_id: int):
