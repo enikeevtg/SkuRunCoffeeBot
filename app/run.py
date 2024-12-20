@@ -10,7 +10,7 @@ from utils.notifications import (send_admins_bot_start_notification,
 
 async def main():
     await db_main()
-    dp.include_routers(handlers.router, admin.router)
+    dp.include_routers(admin.router, handlers.router)
     await send_admins_bot_start_notification()
     await send_group_bot_start_notification()
     await bot.delete_webhook(drop_pending_updates=True)

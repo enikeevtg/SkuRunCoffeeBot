@@ -1,3 +1,4 @@
+# Устарело
 import apiclient
 from decouple import config
 import httplib2
