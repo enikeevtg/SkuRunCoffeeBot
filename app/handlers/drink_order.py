@@ -10,7 +10,7 @@ import logging
 from bot import bot, orders_spreadsheet
 from database import requests as rq
 from handlers import messages, start
-from keyboards import categories_kb, items_kb_builder
+from keyboards import categories_kb, items_kbs
 from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
                        confirm_btn_cb, reject_btn_cb, confirmation_kb)
 from utils.facts import get_fact
@@ -70,7 +70,7 @@ async def display_drink_items_by_category(callback: CallbackQuery) -> None:
 
     await callback.answer()
     await callback.message.edit_text(text=messages.choose_option,
-                              reply_markup=items_kb_builder(callback.data))
+                              reply_markup=items_kbs[callback.data])
 
 
 @router.callback_query(F.data == back_to_categories_btn_cb)
@@ -78,7 +78,7 @@ async def display_drink_categories_again(callback: CallbackQuery):
     logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
                 f'{callback.data}]')
     
-    await callback.answer(cache_time=11)
+    await callback.answer()
     await callback.message.edit_text(text=messages.choose_drink, 
                                      reply_markup=categories_kb)
 

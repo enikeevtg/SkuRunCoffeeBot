@@ -1,5 +1,4 @@
-from .dynamic_kbs import items_kb_builder
-from .dynamic_kbs import categories_kb
+from .dynamic_kbs import categories_kb, items_kbs
 from .dynamic_kbs import back_to_categories_btn_cb
 
 from .static_kbs import (drink_order_btn_text, profile_btn_text,
