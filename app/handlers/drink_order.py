@@ -11,8 +11,13 @@ from bot import bot, orders_spreadsheet
 from database import requests as rq
 from handlers import messages, start
 from keyboards import categories_kb, items_kbs
-from keyboards import (drink_order_btn_text, back_to_categories_btn_cb,
-                       confirm_btn_cb, reject_btn_cb, confirmation_kb)
+from keyboards import (
+    drink_order_btn_text,
+    back_to_categories_btn_cb,
+    confirm_btn_cb,
+    reject_btn_cb,
+    confirmation_kb,
+)
 from utils.facts import get_fact
 
 
@@ -27,8 +32,10 @@ class DrinkOrder(StatesGroup):
 
 @router.message(F.text == drink_order_btn_text, StateFilter(None))
 async def display_drink_categories(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.text}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
     # Временная проверка наличия пользователя в базе данных
     nickname = await rq.get_nickname(message.from_user.id)
@@ -36,95 +43,119 @@ async def display_drink_categories(message: Message, state: FSMContext):
         await start.cmd_start(message, state)
         return
 
-    await message.answer(text=messages.choose_drink, 
-                         reply_markup=categories_kb)
+    await message.answer(
+        text=messages.choose_drink, reply_markup=categories_kb
+    )
     await state.update_data(nickname=nickname)
     await state.set_state(DrinkOrder.order_in_process)
 
 
-@router.message(F.text == drink_order_btn_text,
-                StateFilter(DrinkOrder.order_in_process))
+@router.message(
+    F.text == drink_order_btn_text, StateFilter(DrinkOrder.order_in_process)
+)
 async def order_when_order_in_process(message: Message):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.text}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
     await message.answer(text=messages.choose_drink_above)
 
 
-@router.message(F.text == drink_order_btn_text,
-                StateFilter(DrinkOrder.order_done))
+@router.message(
+    F.text == drink_order_btn_text, StateFilter(DrinkOrder.order_done)
+)
 async def order_when_order_done(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.text}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
     data = await state.get_data()
-    name: str = data['nickname']
-    drink: str = data['drink']
+    name: str = data["nickname"]
+    drink: str = data["drink"]
     await message.answer(messages.order_done.format(name, drink.lower()))
 
 
-@router.callback_query(F.data.startswith('category_'))
+@router.callback_query(F.data.startswith("category_"))
 async def display_drink_items_by_category(callback: CallbackQuery) -> None:
-    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
-                f'{callback.data}]')
+    logger.info(
+        f"[{callback.from_user.id}, {callback.from_user.username}: "
+        + f"{callback.data}]"
+    )
 
     await callback.answer()
-    await callback.message.edit_text(text=messages.choose_option,
-                              reply_markup=items_kbs[callback.data])
+    await callback.message.edit_text(
+        text=messages.choose_option, reply_markup=items_kbs[callback.data]
+    )
 
 
 @router.callback_query(F.data == back_to_categories_btn_cb)
 async def display_drink_categories_again(callback: CallbackQuery):
-    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
-                f'{callback.data}]')
-    
-    await callback.answer()
-    await callback.message.edit_text(text=messages.choose_drink, 
-                                     reply_markup=categories_kb)
-
-
-@router.callback_query(F.data.startswith('item_'))
-async def order_confirmation(callback: CallbackQuery,
-                             state: FSMContext) -> None:
-    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
-                f'{callback.data}]')
+    logger.info(
+        f"[{callback.from_user.id}, {callback.from_user.username}: "
+        + f"{callback.data}]"
+    )
 
     await callback.answer()
-    item_name = callback.data.split('_')[2]
+    await callback.message.edit_text(
+        text=messages.choose_drink, reply_markup=categories_kb
+    )
+
+
+@router.callback_query(F.data.startswith("item_"))
+async def order_confirmation(
+    callback: CallbackQuery, state: FSMContext
+) -> None:
+    logger.info(
+        f"[{callback.from_user.id}, {callback.from_user.username}: "
+        + f"{callback.data}]"
+    )
+
+    await callback.answer()
+    item_name = callback.data.split("_")[2]
     await state.update_data(drink=item_name)
     data = await state.get_data()
     await callback.message.edit_text(
-                messages.order_confirmation
-                        .format(data["nickname"], data["drink"]),
-                reply_markup=confirmation_kb)
+        messages.order_confirmation.format(data["nickname"], data["drink"]),
+        reply_markup=confirmation_kb,
+    )
 
 
 @router.callback_query(F.data == confirm_btn_cb, DrinkOrder.order_in_process)
 async def create_order(callback: CallbackQuery, state: FSMContext):
-    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
-                f'{callback.data}]')
+    logger.info(
+        f"[{callback.from_user.id}, {callback.from_user.username}: "
+        + f"{callback.data}]"
+    )
 
     await callback.answer()
     data = await state.get_data()
-    await callback.message.edit_text(text=messages.order_confirmed +
-                                     str(data['drink']).lower())
+    await callback.message.edit_text(
+        text=messages.order_confirmed + str(data["drink"]).lower()
+    )
     await state.set_state(DrinkOrder.order_done)
-    await orders_spreadsheet.send_order(callback.from_user.id,
-                                        callback.from_user.username,
-                                        data['nickname'],
-                                        data['drink'])
-    async with ChatActionSender(bot=callback.bot, chat_id=callback.from_user.id,
-                                action='typing'):
+    await orders_spreadsheet.send_order(
+        callback.from_user.id,
+        callback.from_user.username,
+        data["nickname"],
+        data["drink"],
+    )
+    async with ChatActionSender(
+        bot=callback.bot, chat_id=callback.from_user.id, action="typing"
+    ):
         await asyncio.sleep(1)
         await callback.message.answer(await get_fact())
 
 
 @router.callback_query(F.data == reject_btn_cb, DrinkOrder.order_in_process)
 async def cancel_order(callback: CallbackQuery, state: FSMContext):
-    logger.info(f'[{callback.from_user.id}, {callback.from_user.username}: ' + \
-                f'{callback.data}]')
+    logger.info(
+        f"[{callback.from_user.id}, {callback.from_user.username}: "
+        + f"{callback.data}]"
+    )
 
     await callback.answer()
     await callback.message.edit_text(text=messages.order_rejected)
     data = await state.get_data()
-    await state.set_state(data.get('prev_state', None))
+    await state.set_state(data.get("prev_state", None))

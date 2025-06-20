@@ -4,8 +4,10 @@ import admin
 import handlers
 from bot import bot, dp
 from database.models import db_main
-from utils.notifications import (send_admins_bot_start_notification,
-                                 send_group_bot_start_notification)
+from utils.notifications import (
+    send_admins_bot_start_notification,
+    send_group_bot_start_notification,
+)
 
 
 async def main():
@@ -17,5 +19,5 @@ async def main():
     await dp.start_polling(bot)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

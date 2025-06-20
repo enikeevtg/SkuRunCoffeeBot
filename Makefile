@@ -3,7 +3,7 @@ PY = python3
 PIP = pip3
 
 # FILENAMES
-VENV = .venv2
+VENV = .venv
 APP = app
 MAIN_SCRIPT = $(APP)/run.py
 REQUIREMENTS = requirements.txt

@@ -23,8 +23,10 @@ logger = logging.getLogger(__name__)
 
 @router.message(~F.text)
 async def other_messages_handler(message: Message):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.content_type}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.content_type}]"
+    )
 
     content_type = messages.content_types_dict[str(message.content_type)]
     await message.answer(text=messages.incorrect_type.format(content_type))

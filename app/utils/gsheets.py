@@ -17,13 +17,19 @@ logger = logging.getLogger(__name__)
 
 # Авторизуемся и получаем service — экземпляр доступа к API
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
-    config('CREDENTIALS_FILE'),
-    ['https://www.googleapis.com/auth/spreadsheets',
-     'https://www.googleapis.com/auth/drive'])
+    config("CREDENTIALS_FILE"),
+    [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive",
+    ],
+)
 httpAuth = credentials.authorize(httplib2.Http())
-service = apiclient.discovery.build('sheets', 'v4', http = httpAuth)
-table_url = 'https://docs.google.com/spreadsheets/d/' + \
-            config('SPREADSHEET_ID') + '/edit'
+service = apiclient.discovery.build("sheets", "v4", http=httpAuth)
+table_url = (
+    "https://docs.google.com/spreadsheets/d/"
+    + config("SPREADSHEET_ID")
+    + "/edit"
+)
 
 
 def init_google_sheet():
@@ -32,8 +38,8 @@ def init_google_sheet():
             service.spreadsheets()
             .values()
             .clear(
-                spreadsheetId=config('SPREADSHEET_ID'),
-                range=config('SHEET_NAME')
+                spreadsheetId=config("SPREADSHEET_ID"),
+                range=config("SHEET_NAME"),
             )
             .execute()
         )
@@ -42,10 +48,10 @@ def init_google_sheet():
             service.spreadsheets()
             .values()
             .append(
-                spreadsheetId=config('SPREADSHEET_ID'),
-                range=config('SHEET_NAME'),
+                spreadsheetId=config("SPREADSHEET_ID"),
+                range=config("SHEET_NAME"),
                 valueInputOption="USER_ENTERED",
-                body={'values': [['Имя', 'Напиток', 'Статус']]}
+                body={"values": [["Имя", "Напиток", "Статус"]]},
             )
             .execute()
         )
@@ -65,30 +71,44 @@ def send_order(tg_id, username, nickname, drink):
                 "appendCells": {
                     "sheetId": 0,
                     "rows": [
-                        {"values": [
-                            {"userEnteredValue": {"stringValue": nickname}},
-                            {"userEnteredValue": {"stringValue": drink}},
-                            {"dataValidation": {
-                                "condition": {
-                                    "type": "BOOLEAN",
-                                    "values": [{"userEnteredValue": "OrderDone"}]
-                                }
-                            }}
-                        ]}
+                        {
+                            "values": [
+                                {
+                                    "userEnteredValue": {
+                                        "stringValue": nickname
+                                    }
+                                },
+                                {"userEnteredValue": {"stringValue": drink}},
+                                {
+                                    "dataValidation": {
+                                        "condition": {
+                                            "type": "BOOLEAN",
+                                            "values": [
+                                                {
+                                                    "userEnteredValue": "OrderDone"
+                                                }
+                                            ],
+                                        }
+                                    }
+                                },
+                            ]
+                        }
                     ],
-                    "fields": "*"
+                    "fields": "*",
                 }
             }
         )
 
-        body = {'requests': requests}
+        body = {"requests": requests}
         response = (
             service.spreadsheets()
-            .batchUpdate(spreadsheetId=config('SPREADSHEET_ID'), body=body)
+            .batchUpdate(spreadsheetId=config("SPREADSHEET_ID"), body=body)
             .execute()
         )
-        logger.info(f'[{tg_id}, {username}: | {nickname} | {drink} | [ ] | ' +
-                    'cells appended.]')
+        logger.info(
+            f"[{tg_id}, {username}: | {nickname} | {drink} | [ ] | "
+            + "cells appended.]"
+        )
         return response
 
     except HttpError as error:

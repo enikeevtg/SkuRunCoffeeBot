@@ -12,13 +12,16 @@ logger = logging.getLogger(__name__)
 
 @router.message(F.text == i_am_admin_btn_text, F.from_user.id.in_(admins_ids))
 async def display_admins_keyboard(message: Message):
-    await message.answer(text='Твои секретные возможности 🤫',
-                         reply_markup=admin_inline_kb)
+    await message.answer(
+        text="Твои секретные возможности 🤫", reply_markup=admin_inline_kb
+    )
 
 
 @router.message(F.text == i_am_admin_btn_text)
 async def display_admins_keyboard(message: Message):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                f'{message.text}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
-    await message.answer(text='Доступ запрещён 🤨')
+    await message.answer(text="Доступ запрещён 🤨")

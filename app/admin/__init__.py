@@ -1,4 +1,4 @@
-__all__ = ('router')
+__all__ = "router"
 
 from aiogram import Router
 
@@ -8,7 +8,8 @@ from .cancel import router as cancel_router
 
 
 router = Router(name=__name__)
-router.include_routers(cancel_router,
-                       add_order_router,
-                       admins_main_router,
-                       )
+router.include_routers(
+    cancel_router,
+    add_order_router,
+    admins_main_router,
+)

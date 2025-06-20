@@ -1,5 +1,5 @@
 from aiogram import F, Router
-from aiogram.filters import CommandStart, StateFilter
+from aiogram.filters import CommandObject, CommandStart, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ContentType, Message
@@ -8,6 +8,7 @@ import logging
 from bot import admins_ids
 from database import requests as rq
 from handlers import messages
+from handlers.drink_order import display_drink_categories
 from keyboards import admins_main_kb, main_kb
 
 
@@ -21,9 +22,15 @@ class Registration(StatesGroup):
 
 
 @router.message(CommandStart(), StateFilter(None))
-async def cmd_start(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
+async def cmd_start(
+    message: Message,
+    command: CommandObject,
+    state: FSMContext,
+):
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
     nickname = await rq.get_nickname(message.from_user.id)
     if not nickname:
@@ -31,16 +38,21 @@ async def cmd_start(message: Message, state: FSMContext):
         await state.set_state(Registration.set_nickname)
         return
 
-    await lets_go(message)
+    mark = command.args
+    if mark:
+        await display_drink_categories(message, state)
+    else:
+        await lets_go(message)
 
 
-@router.message(F.content_type == ContentType.TEXT,
-                Registration.set_nickname)
+@router.message(F.content_type == ContentType.TEXT, Registration.set_nickname)
 async def set_nickname(message: Message, state: FSMContext):
-    logger.info(f'[{message.from_user.id}, {message.from_user.username}: ' + \
-                 f'{message.text}]')
+    logger.info(
+        f"[{message.from_user.id}, {message.from_user.username}: "
+        + f"{message.text}]"
+    )
 
-    if message.text.replace(' ', '').isalpha() is False:
+    if message.text.replace(" ", "").isalpha() is False:
         await message.answer(messages.incorrect_nickname)
     else:
         await lets_go(message)
@@ -49,8 +61,9 @@ async def set_nickname(message: Message, state: FSMContext):
 
 
 async def lets_go(message: Message):
-    await message.answer(f'Поехали! 🚀',
-                         reply_markup=admins_main_kb
-                                      if message.from_user.id
-                                      in admins_ids
-                                      else main_kb)
+    await message.answer(
+        f"Поехали! 🚀",
+        reply_markup=(
+            admins_main_kb if message.from_user.id in admins_ids else main_kb
+        ),
+    )
