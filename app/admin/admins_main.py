@@ -21,7 +21,7 @@ async def display_admins_keyboard(message: Message):
 async def display_admins_keyboard(message: Message):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     await message.answer(text="Доступ запрещён 🤨")

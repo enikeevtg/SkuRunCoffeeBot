@@ -29,7 +29,7 @@ async def cmd_start(
 ):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     nickname = await rq.get_nickname(message.from_user.id)
@@ -49,7 +49,7 @@ async def cmd_start(
 async def set_nickname(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     if message.text.replace(" ", "").isalpha() is False:

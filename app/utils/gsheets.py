@@ -26,9 +26,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
 httpAuth = credentials.authorize(httplib2.Http())
 service = apiclient.discovery.build("sheets", "v4", http=httpAuth)
 table_url = (
-    "https://docs.google.com/spreadsheets/d/"
-    + config("SPREADSHEET_ID")
-    + "/edit"
+    f"https://docs.google.com/spreadsheets/d/{config("SPREADSHEET_ID")}/edit"
 )
 
 
@@ -107,7 +105,7 @@ def send_order(tg_id, username, nickname, drink):
         )
         logger.info(
             f"[{tg_id}, {username}: | {nickname} | {drink} | [ ] | "
-            + "cells appended.]"
+            "cells appended.]"
         )
         return response
 

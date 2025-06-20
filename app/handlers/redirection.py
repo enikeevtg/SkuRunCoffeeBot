@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 async def redirect(callback: CallbackQuery):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     bot_me = await callback.bot.me()

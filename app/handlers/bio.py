@@ -26,7 +26,7 @@ class NameEdition(StatesGroup):
 async def display_user_bio(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     # Временная проверка наличия пользователя в базе данных
@@ -45,7 +45,7 @@ async def display_user_bio(message: Message, state: FSMContext):
 async def edit_name(callback: CallbackQuery, state: FSMContext):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -58,7 +58,7 @@ async def edit_name(callback: CallbackQuery, state: FSMContext):
 async def set_new_name(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     if message.text.replace(" ", "").isalpha() is False:

@@ -34,7 +34,7 @@ class DrinkOrder(StatesGroup):
 async def display_drink_categories(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     # Временная проверка наличия пользователя в базе данных
@@ -56,7 +56,7 @@ async def display_drink_categories(message: Message, state: FSMContext):
 async def order_when_order_in_process(message: Message):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     await message.answer(text=messages.choose_drink_above)
@@ -68,7 +68,7 @@ async def order_when_order_in_process(message: Message):
 async def order_when_order_done(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     data = await state.get_data()
@@ -81,7 +81,7 @@ async def order_when_order_done(message: Message, state: FSMContext):
 async def display_drink_items_by_category(callback: CallbackQuery) -> None:
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -94,7 +94,7 @@ async def display_drink_items_by_category(callback: CallbackQuery) -> None:
 async def display_drink_categories_again(callback: CallbackQuery):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -109,7 +109,7 @@ async def order_confirmation(
 ) -> None:
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -126,7 +126,7 @@ async def order_confirmation(
 async def create_order(callback: CallbackQuery, state: FSMContext):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -152,7 +152,7 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
 async def cancel_order(callback: CallbackQuery, state: FSMContext):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()

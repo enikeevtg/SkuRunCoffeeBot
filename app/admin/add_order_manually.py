@@ -27,7 +27,7 @@ class AdminDrinkOrder(StatesGroup):
 async def add_order_manually(callback: CallbackQuery, state: FSMContext):
     logger.info(
         f"[{callback.from_user.id}, {callback.from_user.username}: "
-        + f"{callback.data}]"
+        f"{callback.data}]"
     )
 
     await callback.answer()
@@ -42,7 +42,7 @@ async def add_order_manually(callback: CallbackQuery, state: FSMContext):
 async def add_drink(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     await message.answer(text="Введи название напитка")
@@ -54,7 +54,7 @@ async def add_drink(message: Message, state: FSMContext):
 async def admin_create_order(message: Message, state: FSMContext):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )
 
     data = await state.get_data()

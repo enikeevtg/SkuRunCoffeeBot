@@ -13,5 +13,5 @@ router = Router(name=__name__)
 async def ignore_group_chat_all_messages(message: Message):
     logger.info(
         f"[{message.from_user.id}, {message.from_user.username}: "
-        + f"{message.text}]"
+        f"{message.text}]"
     )

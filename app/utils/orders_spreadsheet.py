@@ -81,9 +81,8 @@ class GoogleSpreadsheetsRequests:
             }
             response = await self.batchUpdate_request(body)
             self.logger.info(
-                f"[{tg_id}, {username}: "
-                + f"| {nickname} | {drink} | [ ] | "
-                + "cells appended.]"
+                f"[{tg_id}, {username}: | {nickname} | {drink} | [ ] | "
+                "cells appended.]"
             )
             return response
 
