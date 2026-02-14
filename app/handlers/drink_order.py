@@ -7,7 +7,7 @@ from aiogram.utils.chat_action import ChatActionSender
 import asyncio
 import logging
 
-from bot import bot, orders_spreadsheet
+from bot import admins_ids, daily_runners, orders_spreadsheet
 from database import requests as rq
 from handlers import messages, start
 from keyboards import categories_kb, items_kbs
@@ -141,6 +141,14 @@ async def create_order(callback: CallbackQuery, state: FSMContext):
         data["nickname"],
         data["drink"],
     )
+    if callback.from_user.id not in admins_ids:
+        daily_runners.append(
+            {
+                "tg_id": callback.from_user.id,
+                "username": callback.from_user.username,
+                "nickname": data["nickname"],
+            }
+        )
     async with ChatActionSender(
         bot=callback.bot, chat_id=callback.from_user.id, action="typing"
     ):

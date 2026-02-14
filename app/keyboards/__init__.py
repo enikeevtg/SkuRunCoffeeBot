@@ -8,6 +8,7 @@ from .static_kbs import (
     add_order_manually_btn_cb,
     confirm_btn_cb,
     reject_btn_cb,
+    dice_cb,
 )
 from .static_kbs import (
     main_kb,

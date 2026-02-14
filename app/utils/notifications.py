@@ -9,7 +9,7 @@ async def send_admins_bot_start_notification():
         nickname = await rq.get_nickname(admin_id)
         await bot.send_message(
             admin_id,
-            nickname ", я проснулся 🤗\n",
+            f"{nickname}, я проснулся 🤗\n",
             reply_markup=admin_inline_kb,
         )
 

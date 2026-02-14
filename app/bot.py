@@ -31,3 +31,4 @@ dp = Dispatcher(storage=MemoryStorage())
 orders_spreadsheet = GoogleSpreadsheetsRequests(
     config("CREDENTIALS_FILE"), config("SPREADSHEET_ID")
 )
+daily_runners = []

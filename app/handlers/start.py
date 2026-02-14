@@ -32,6 +32,7 @@ async def cmd_start(
         f"{message.text}]"
     )
 
+    await message.delete()
     nickname = await rq.get_nickname(message.from_user.id)
     if not nickname:
         await message.answer(messages.register_request)

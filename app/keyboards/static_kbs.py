@@ -11,6 +11,7 @@ profile_btn_text = "Профиль 👤"
 
 # inline keyboard buttons callback data
 add_order_manually_btn_cb = "add_order_manually"
+dice_cb = "dice"
 confirm_btn_cb = "confirm"
 reject_btn_cb = "reject"
 
@@ -49,8 +50,11 @@ add_order_btn = InlineKeyboardButton(
 open_table_btn = InlineKeyboardButton(
     text="📄 Открыть таблицу", url=orders_spreadsheet.url
 )
+dice_btn = InlineKeyboardButton(
+    text="🎲 Разыграть депозит", callback_data=dice_cb
+)
 admin_inline_kb = InlineKeyboardMarkup(
-    inline_keyboard=[[add_order_btn], [open_table_btn]]
+    inline_keyboard=[[add_order_btn], [dice_btn], [open_table_btn]]
 )
 
 # confiramtion keyboard
